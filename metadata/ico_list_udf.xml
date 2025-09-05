@@ -1,0 +1,592 @@
+<html>
+<head><title>Simple Query </title><link rel="stylesheet" type="text/css" href="../start/layout/sapstyle.css"></head>
+<body>
+<h2>Simple Query </h2>
+<form action="./SimpleQuery" method=post>
+<h3>Define the Context</h3>
+<p>
+<input type=radio name="qc" value="Default (for directory objects)" checked>Default (for directory objects)<br>
+<input type=radio name="qc" value="This business system (for repository objects)">This business system (for repository objects)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<select name="businessL" size=1>
+<option selected value="Business_sys_ASJava">Business_sys_ASJava</option>
+<option value="ERP_ECC_RUTUJA_800_GLOBAL">ERP_ECC_RUTUJA_800_GLOBAL</option>
+<option value="BS_F2F_CUST_SYS">BS_F2F_CUST_SYS</option>
+<option value="BS_RUTIK_POTRAINING_DEMO">BS_RUTIK_POTRAINING_DEMO</option>
+<option value="BS_F2F_POCASTS_SYSTEM_DIPALI">BS_F2F_POCASTS_SYSTEM_DIPALI</option>
+<option value="BS_HR_SYSTEM">BS_HR_SYSTEM</option>
+<option value="SAPECC1">SAPECC1</option>
+<option value="SAPECC2">SAPECC2</option>
+<option value="BS_F2F_POCASTSS_SYS">BS_F2F_POCASTSS_SYS</option>
+<option value="BS_SYS_STAND">BS_SYS_STAND</option>
+<option value="BS_SYS_THIRD">BS_SYS_THIRD</option>
+<option value="BSCLNT200">BSCLNT200</option>
+<option value="BSCLNT300">BSCLNT300</option>
+<option value="BS_POTRAINING_DEMO">BS_POTRAINING_DEMO</option>
+<option value="ERP_ECC_800_TP_GLOBAL">ERP_ECC_800_TP_GLOBAL</option>
+<option value="BS_SYS_STANDALONE">BS_SYS_STANDALONE</option>
+<option value="BS_F2F_CUST_SYSTEM_R">BS_F2F_CUST_SYSTEM_R</option>
+<option value="SAPECC">SAPECC</option>
+<option value="BS_F2F_CRAVE_SYSTEM">BS_F2F_CRAVE_SYSTEM</option>
+<option value="INTEGRATION_ENGINE_JAVA_SPO">INTEGRATION_ENGINE_JAVA_SPO</option>
+<option value="BS_FILESYS_00">BS_FILESYS_00</option>
+<option value="ECCSYS">ECCSYS</option>
+<option value="BS_F2F_RCRAVE_SYSTEM">BS_F2F_RCRAVE_SYSTEM</option>
+<option value="BS_F2F_CUST_SYSTEM">BS_F2F_CUST_SYSTEM</option>
+<option value="BS_F2F_CUST_SYSTEM_DIPALI">BS_F2F_CUST_SYSTEM_DIPALI</option>
+<option value="CS4CLNT700">CS4CLNT700</option>
+<option value="BS_POTRAINING_DIPALI_DEMO">BS_POTRAINING_DIPALI_DEMO</option>
+<option value="BS_HR_SYS">BS_HR_SYS</option>
+<option value="BS_SYS_AS_JAVA">BS_SYS_AS_JAVA</option>
+</select>
+</p>
+<hr>
+<h3>Changelists</h3>
+<input type=checkbox name="changeLOnly" value="true"
+>Consider changelists only</input><br>
+<input type=checkbox name="changeL" value="true"
+>Consider all of user (or a list of CLIDs starting with '#' and separated by ','): </input>
+<input name="userL" type="text" size="40" value=""><h3>Sync Tables</h3>
+<input type=checkbox name="syncTabL" value="true"
+ checked
+>Use sync tables
+<h3>Object Versions</h3>
+<input type="radio" name="deletedL" value="N"
+ checked
+ >Consider only non-deleted <br>
+<input type="radio" name="deletedL" value="D"
+ >Consider only deleted <br>
+<input type="radio" name="deletedL" value="B"
+ >Consider deleted and non-deleted <br>
+</p>
+<h3>Query XML </h3>
+Release:  <select name="xmlReleaseL" size=1>
+<option value="2.0">2.0</option>
+<option value="3.0">3.0</option>
+<option selected value="7.1">7.1</option>
+</select><br>
+<input type=checkbox name="requestXMLL" value="true"
+>Show request XML</input><br>
+<input type=checkbox name="responseXMLL" value="true"
+ checked
+>Show response XML</input><br>
+<input type=checkbox name="useXMLL" value="true"
+>Use the following XML for the request:</input><br>
+<textarea name="queryRequestXMLL" cols="50" rows="8" wrap="virtual"></textarea></p>
+<hr>
+<h3>Define the Object type(s)</h3>
+<p>
+<select name="types" size=10 multiple>
+<option value="AgencySchemObj">Agency and Schema</option>
+<option value="AlertRule">Alert Rule</option>
+<option value="Channel">Communication Channel</option>
+<option value="Service">Communication Component</option>
+<option value="DirectoryView">Configuration Scenario</option>
+<option value="P2PBinding">Direct Connection</option>
+<option value="DOCU">Documentation</option>
+<option selected value="AllInOne">Integrated Configuration</option>
+<option value="MappingRelation">Interface Determination</option>
+<option value="Party">Party</option>
+<option value="OutboundBinding">Receiver Agreement</option>
+<option value="RoutingRelation">Receiver Determination</option>
+<option value="RoutingRule">Receiver Rule</option>
+<option value="InboundBinding">Sender Agreement</option>
+<option value="ValueMapping">Value Mapping Group</option>
+</select>
+</p><p>
+<input type=submit name=action value="Refresh depended values" />
+</p><hr>
+<h3>Define the Query Condition(s)</h3>
+Value types:#BO#(Boolean),#DT#(Date),#GU#(Guid),
+#IN#(Integer),#XK#(XiKey),#XR#(XiRef),#AG#(Guid[])<br>
+<table>
+<tr>
+<td>
+<input type=checkbox name="qcActiveL0" value="true"
+></input>
+</td>
+<td>
+<select name="qcKeyL0" size=7>
+<option value="MODIFYUSER">Changed By</option>
+<option value="MODIFYDATE">Changed On</option>
+<option value="TEXT">Description</option>
+<option value="FOLDERREF">FOLDERREF</option>
+<option value="PARAMETER">Parameter</option>
+<option value="OWNER">Person Responsible</option>
+<option value="QA_DOCU_LANGUAGE">QA_DOCU_LANGUAGE</option>
+<option value="QA_DOCU_LANGUAGE_STRICT">QA_DOCU_LANGUAGE_STRICT</option>
+<option value="QA_KEY_RESTRICTION">QA_KEY_RESTRICTION</option>
+<option value="QA_LINK_POSITION">QA_LINK_POSITION</option>
+<option value="QA_LINK_RESOLVEMODE">QA_LINK_RESOLVEMODE</option>
+<option value="QA_LINK_ROLE">QA_LINK_ROLE</option>
+<option value="QA_LINK_TARGET_OBJECT_KEY">QA_LINK_TARGET_OBJECT_KEY</option>
+<option value="QA_LINK_TARGET_OID">QA_LINK_TARGET_OID</option>
+<option value="QA_LINK_TARGET_REFERENCE">QA_LINK_TARGET_REFERENCE</option>
+<option value="QA_LINK_TARGET_TYPE">QA_LINK_TARGET_TYPE</option>
+<option value="Q_TEXT_LABEL_LONG">Q_TEXT_LABEL_LONG</option>
+<option value="Q_TEXT_LABEL_SHORT">Q_TEXT_LABEL_SHORT</option>
+<option value="Q_TEXT_SHORT">Q_TEXT_SHORT</option>
+<option value="TOSRVC">Receiver Communication Component</option>
+<option value="TOPARTY">Receiver Communication Party</option>
+<option value="VALIDATIONMODE">Schema Validation</option>
+<option value="FROMSRVC">Sender Communication Component</option>
+<option value="FROMPARTY">Sender Communication Party</option>
+<option value="FROMACTION">Sender Interface</option>
+<option value="FROMACTIONNS">Sender Namespace</option>
+<option value="USEGLOBAL">Use Global</option>
+<option value="VERSIONID">VERSIONID</option>
+<option value="VIRUSSCANMODE">Virus Scan</option>
+</select>
+</td>
+<td>
+<select name="qcOpL0" size=7>
+<option value="EQ">EQ</option>
+<option value="NOT_EQ">NOT_EQ</option>
+<option value="LIKE">LIKE</option>
+<option value="NOT_LIKE">NOT_LIKE</option>
+<option value="GE">GE</option>
+<option value="LE">LE</option>
+<option value="GT">GT</option>
+<option value="LT">LT</option>
+<option value="BETWEEN">BETWEEN</option>
+<option value="NOT_BETWEEN">NOT_BETWEEN</option>
+<option value="IN">IN</option>
+<option value="NOT_IN">NOT_IN</option>
+<option value="IS_NULL">IS_NULL</option>
+<option value="IS_NOT_NULL">IS_NOT_NULL</option>
+</select>
+</td>
+<td>
+<input name="qcValueL0" type="text" size="30" value="">
+</td>
+<td>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<input type=submit name=action value="Remove0" maxlength=6/>
+</td>
+</tr>
+</table>
+<br><input type=submit name=action value="Add new condition" />
+<hr>
+<h3>Define the Result Attributes</h3>
+<select name="result" size=10 multiple>
+<option value="MODIFYUSER">Changed By</option>
+<option value="MODIFYDATE">Changed On</option>
+<option value="TEXT">Description</option>
+<option value="FOLDERREF">FOLDERREF</option>
+<option selected value="RA_XILINK">Link to object</option>
+<option value="OBJECTID">OBJECTID</option>
+<option value="PARAMETER">Parameter</option>
+<option value="OWNER">Person Responsible</option>
+<option value="Q_TEXT_LABEL_LONG">Q_TEXT_LABEL_LONG</option>
+<option value="Q_TEXT_LABEL_SHORT">Q_TEXT_LABEL_SHORT</option>
+<option value="Q_TEXT_SHORT">Q_TEXT_SHORT</option>
+<option value="RA_CHECK_EXISTENCE_OF_TYPE">RA_CHECK_EXISTENCE_OF_TYPE</option>
+<option value="RA_CHECK_EXISTENCE_OF_TYPEnot">RA_CHECK_EXISTENCE_OF_TYPEnot</option>
+<option value="RA_LINK_LIST">RA_LINK_LIST</option>
+<option value="RA_LINK_LIST_ROLE">RA_LINK_LIST_ROLE</option>
+<option value="RA_LINK_LIST_ROLE_POS">RA_LINK_LIST_ROLE_POS</option>
+<option value="RA_LINK_POSITION">RA_LINK_POSITION</option>
+<option value="RA_LINK_RESOLVEMODE">RA_LINK_RESOLVEMODE</option>
+<option value="RA_LINK_ROLE">RA_LINK_ROLE</option>
+<option value="RA_LINK_TARGET_OID">RA_LINK_TARGET_OID</option>
+<option value="RA_LINK_TARGET_REFERENCE">RA_LINK_TARGET_REFERENCE</option>
+<option value="RA_LINK_TARGET_TYPE">RA_LINK_TARGET_TYPE</option>
+<option value="RA_TEXT_LANGUAGE_LONG">RA_TEXT_LANGUAGE_LONG</option>
+<option value="RA_TEXT_LANGUAGE_SHORT">RA_TEXT_LANGUAGE_SHORT</option>
+<option value="RA_TEXT_LONG">RA_TEXT_LONG</option>
+<option value="TOSRVC">Receiver Communication Component</option>
+<option value="TOPARTY">Receiver Communication Party</option>
+<option value="VALIDATIONMODE">Schema Validation</option>
+<option value="FROMSRVC">Sender Communication Component</option>
+<option value="FROMPARTY">Sender Communication Party</option>
+<option value="FROMACTION">Sender Interface</option>
+<option value="FROMACTIONNS">Sender Namespace</option>
+<option value="USEGLOBAL">Use Global</option>
+<option value="VERSIONID">VERSIONID</option>
+<option value="VIRUSSCANMODE">Virus Scan</option>
+</select>
+<hr>
+<p><input type=submit name=action value="Start query" /></p>
+<hr>
+<h3>Amount of objects: 72</h3>
+<pre>
+<table border=1>
+<tr>
+<th>
+Key</th>
+<th>Raw</th><th>WSDL</th><th>Print
+</th>
+</tr>
+<tr>
+<td>
+Integrated Configuration  | BC_Sender_Postman | http://craveinfotech.com/restfulapis | SI_OUT_Restful_object_list |  | </td><td><a target="_blank" href="http://SAPPO.craveinfotech.com:50000/dir/read/ext?method=PLAIN&TYPE=AllInOne&KEY=%7CBC_Sender_Postman%7Chttp%3A%2F%2Fcraveinfotech.com%2Frestfulapis%7CSI_OUT_Restful_object_list%7C%7C&VC=DIR&UC=false&release=7.0">R</a></td><td>&nbsp;</td><td>&nbsp;
+</td>
+</tr>
+<tr>
+<td>
+Integrated Configuration  | SENDER | http://craveinfotech.com/poc/007 | POC_007_Outb_Sync |  | </td><td><a target="_blank" href="http://SAPPO.craveinfotech.com:50000/dir/read/ext?method=PLAIN&TYPE=AllInOne&KEY=%7CSENDER%7Chttp%3A%2F%2Fcraveinfotech.com%2Fpoc%2F007%7CPOC_007_Outb_Sync%7C%7C&VC=DIR&UC=false&release=7.0">R</a></td><td>&nbsp;</td><td>&nbsp;
+</td>
+</tr>
+<tr>
+<td>
+Integrated Configuration  | SENDER | http://craveinfotech.com/poc/001 | POC_001_Outb_Sync |  | </td><td><a target="_blank" href="http://SAPPO.craveinfotech.com:50000/dir/read/ext?method=PLAIN&TYPE=AllInOne&KEY=%7CSENDER%7Chttp%3A%2F%2Fcraveinfotech.com%2Fpoc%2F001%7CPOC_001_Outb_Sync%7C%7C&VC=DIR&UC=false&release=7.0">R</a></td><td>&nbsp;</td><td>&nbsp;
+</td>
+</tr>
+<tr>
+<td>
+Integrated Configuration Vishal_Training01_Sender_copy | Sender | http://test.com/vishal_002_training_01 | OutboundAsync |  | </td><td><a target="_blank" href="http://SAPPO.craveinfotech.com:50000/dir/read/ext?method=PLAIN&TYPE=AllInOne&KEY=Vishal_Training01_Sender_copy%7CSender%7Chttp%3A%2F%2Ftest.com%2Fvishal_002_training_01%7COutboundAsync%7C%7C&VC=DIR&UC=false&release=7.0">R</a></td><td>&nbsp;</td><td>&nbsp;
+</td>
+</tr>
+<tr>
+<td>
+Integrated Configuration Mayank003 | Sender | http://test.com/mayank02 | ADD_out_sync |  | </td><td><a target="_blank" href="http://SAPPO.craveinfotech.com:50000/dir/read/ext?method=PLAIN&TYPE=AllInOne&KEY=Mayank003%7CSender%7Chttp%3A%2F%2Ftest.com%2Fmayank02%7CADD_out_sync%7C%7C&VC=DIR&UC=false&release=7.0">R</a></td><td>&nbsp;</td><td>&nbsp;
+</td>
+</tr>
+<tr>
+<td>
+Integrated Configuration  | SENDER | http://craveinfotech.com/poc/006 | POC_006_Outb_Async |  | </td><td><a target="_blank" href="http://SAPPO.craveinfotech.com:50000/dir/read/ext?method=PLAIN&TYPE=AllInOne&KEY=%7CSENDER%7Chttp%3A%2F%2Fcraveinfotech.com%2Fpoc%2F006%7CPOC_006_Outb_Async%7C%7C&VC=DIR&UC=false&release=7.0">R</a></td><td>&nbsp;</td><td>&nbsp;
+</td>
+</tr>
+<tr>
+<td>
+Integrated Configuration  | TEST_MigrationHelper | TESTING | TESTING |  | </td><td><a target="_blank" href="http://SAPPO.craveinfotech.com:50000/dir/read/ext?method=PLAIN&TYPE=AllInOne&KEY=%7CTEST_MigrationHelper%7CTESTING%7CTESTING%7C%7C&VC=DIR&UC=false&release=7.0">R</a></td><td>&nbsp;</td><td>&nbsp;
+</td>
+</tr>
+<tr>
+<td>
+Integrated Configuration TejasDemo03_Sender | Sender | http://test.com/tejas03 | Outb_Sync |  | </td><td><a target="_blank" href="http://SAPPO.craveinfotech.com:50000/dir/read/ext?method=PLAIN&TYPE=AllInOne&KEY=TejasDemo03_Sender%7CSender%7Chttp%3A%2F%2Ftest.com%2Ftejas03%7COutb_Sync%7C%7C&VC=DIR&UC=false&release=7.0">R</a></td><td>&nbsp;</td><td>&nbsp;
+</td>
+</tr>
+<tr>
+<td>
+Integrated Configuration  | SENDER | http://craveinfotech.com/new_test_d/001 | NEW_TEST_D_Add_outb_Sync | Calculator | WeBsErViCe</td><td><a target="_blank" href="http://SAPPO.craveinfotech.com:50000/dir/read/ext?method=PLAIN&TYPE=AllInOne&KEY=%7CSENDER%7Chttp%3A%2F%2Fcraveinfotech.com%2Fnew_test_d%2F001%7CNEW_TEST_D_Add_outb_Sync%7CCalculator%7CWeBsErViCe&VC=DIR&UC=false&release=7.0">R</a></td><td>&nbsp;</td><td>&nbsp;
+</td>
+</tr>
+<tr>
+<td>
+Integrated Configuration Training01_Sender | Sender | http://test.com/training01 | OutboundAsync |  | </td><td><a target="_blank" href="http://SAPPO.craveinfotech.com:50000/dir/read/ext?method=PLAIN&TYPE=AllInOne&KEY=Training01_Sender%7CSender%7Chttp%3A%2F%2Ftest.com%2Ftraining01%7COutboundAsync%7C%7C&VC=DIR&UC=false&release=7.0">R</a></td><td>&nbsp;</td><td>&nbsp;
+</td>
+</tr>
+<tr>
+<td>
+Integrated Configuration Tejas_Demo_JM | Sender | http://test.com/tejas_filetofile | SIOA_Src_JavaMapping |  | </td><td><a target="_blank" href="http://SAPPO.craveinfotech.com:50000/dir/read/ext?method=PLAIN&TYPE=AllInOne&KEY=Tejas_Demo_JM%7CSender%7Chttp%3A%2F%2Ftest.com%2Ftejas_filetofile%7CSIOA_Src_JavaMapping%7C%7C&VC=DIR&UC=false&release=7.0">R</a></td><td>&nbsp;</td><td>&nbsp;
+</td>
+</tr>
+<tr>
+<td>
+Integrated Configuration Proxy_P | Proxy_BC | http://picourse.com/proxyInterface02 | SI_BooksSend |  | </td><td><a target="_blank" href="http://SAPPO.craveinfotech.com:50000/dir/read/ext?method=PLAIN&TYPE=AllInOne&KEY=Proxy_P%7CProxy_BC%7Chttp%3A%2F%2Fpicourse.com%2FproxyInterface02%7CSI_BooksSend%7C%7C&VC=DIR&UC=false&release=7.0">R</a></td><td>&nbsp;</td><td>&nbsp;
+</td>
+</tr>
+<tr>
+<td>
+Integrated Configuration Mayank01_Sender | Sender | http://test.com/mayank02 | ADD_out_sync |  | </td><td><a target="_blank" href="http://SAPPO.craveinfotech.com:50000/dir/read/ext?method=PLAIN&TYPE=AllInOne&KEY=Mayank01_Sender%7CSender%7Chttp%3A%2F%2Ftest.com%2Fmayank02%7CADD_out_sync%7C%7C&VC=DIR&UC=false&release=7.0">R</a></td><td>&nbsp;</td><td>&nbsp;
+</td>
+</tr>
+<tr>
+<td>
+Integrated Configuration Rutuja_Demo1_sender | sender | http://test.com/rutuja | outboundAsync |  | </td><td><a target="_blank" href="http://SAPPO.craveinfotech.com:50000/dir/read/ext?method=PLAIN&TYPE=AllInOne&KEY=Rutuja_Demo1_sender%7Csender%7Chttp%3A%2F%2Ftest.com%2Frutuja%7CoutboundAsync%7C%7C&VC=DIR&UC=false&release=7.0">R</a></td><td>&nbsp;</td><td>&nbsp;
+</td>
+</tr>
+<tr>
+<td>
+Integrated Configuration TejasDemo04 | soapSender | http://test.com/tejas_F2F | SIOA_Src_JavaMapping |  | </td><td><a target="_blank" href="http://SAPPO.craveinfotech.com:50000/dir/read/ext?method=PLAIN&TYPE=AllInOne&KEY=TejasDemo04%7CsoapSender%7Chttp%3A%2F%2Ftest.com%2Ftejas_F2F%7CSIOA_Src_JavaMapping%7C%7C&VC=DIR&UC=false&release=7.0">R</a></td><td>&nbsp;</td><td>&nbsp;
+</td>
+</tr>
+<tr>
+<td>
+Integrated Configuration  | SENDER | http://craveinfotech.com/product_test/001 | Product_Test_001_Add_Outb_Sync | Calculator | Webservicee</td><td><a target="_blank" href="http://SAPPO.craveinfotech.com:50000/dir/read/ext?method=PLAIN&TYPE=AllInOne&KEY=%7CSENDER%7Chttp%3A%2F%2Fcraveinfotech.com%2Fproduct_test%2F001%7CProduct_Test_001_Add_Outb_Sync%7CCalculator%7CWebservicee&VC=DIR&UC=false&release=7.0">R</a></td><td>&nbsp;</td><td>&nbsp;
+</td>
+</tr>
+<tr>
+<td>
+Integrated Configuration Sahil_Sender | Sender | http://test.com/sahil_khanke | OutboundAsync |  | </td><td><a target="_blank" href="http://SAPPO.craveinfotech.com:50000/dir/read/ext?method=PLAIN&TYPE=AllInOne&KEY=Sahil_Sender%7CSender%7Chttp%3A%2F%2Ftest.com%2Fsahil_khanke%7COutboundAsync%7C%7C&VC=DIR&UC=false&release=7.0">R</a></td><td>&nbsp;</td><td>&nbsp;
+</td>
+</tr>
+<tr>
+<td>
+Integrated Configuration PY_POCTRAINING_F2F_SOURCE | BS_POCTRAINING_F2F_SOURCE | http://craveinfotech.com/interfacedemo/file2file | SI_OUT_F2F_CUST_PO_CREATE |  | </td><td><a target="_blank" href="http://SAPPO.craveinfotech.com:50000/dir/read/ext?method=PLAIN&TYPE=AllInOne&KEY=PY_POCTRAINING_F2F_SOURCE%7CBS_POCTRAINING_F2F_SOURCE%7Chttp%3A%2F%2Fcraveinfotech.com%2Finterfacedemo%2Ffile2file%7CSI_OUT_F2F_CUST_PO_CREATE%7C%7C&VC=DIR&UC=false&release=7.0">R</a></td><td>&nbsp;</td><td>&nbsp;
+</td>
+</tr>
+<tr>
+<td>
+Integrated Configuration  | SENDER | http://craveinfotech.com/poc/019 | ExchangeRates_Outb_Sync |  | </td><td><a target="_blank" href="http://SAPPO.craveinfotech.com:50000/dir/read/ext?method=PLAIN&TYPE=AllInOne&KEY=%7CSENDER%7Chttp%3A%2F%2Fcraveinfotech.com%2Fpoc%2F019%7CExchangeRates_Outb_Sync%7C%7C&VC=DIR&UC=false&release=7.0">R</a></td><td>&nbsp;</td><td>&nbsp;
+</td>
+</tr>
+<tr>
+<td>
+Integrated Configuration  | SENDER | http://craveinfotech.com/poc/016 | POC_016_Outb_Async |  | </td><td><a target="_blank" href="http://SAPPO.craveinfotech.com:50000/dir/read/ext?method=PLAIN&TYPE=AllInOne&KEY=%7CSENDER%7Chttp%3A%2F%2Fcraveinfotech.com%2Fpoc%2F016%7CPOC_016_Outb_Async%7C%7C&VC=DIR&UC=false&release=7.0">R</a></td><td>&nbsp;</td><td>&nbsp;
+</td>
+</tr>
+<tr>
+<td>
+Integrated Configuration PO_Abhi_Sender | Sender | http://test.com/abhi | OutboundAsync |  | </td><td><a target="_blank" href="http://SAPPO.craveinfotech.com:50000/dir/read/ext?method=PLAIN&TYPE=AllInOne&KEY=PO_Abhi_Sender%7CSender%7Chttp%3A%2F%2Ftest.com%2Fabhi%7COutboundAsync%7C%7C&VC=DIR&UC=false&release=7.0">R</a></td><td>&nbsp;</td><td>&nbsp;
+</td>
+</tr>
+<tr>
+<td>
+Integrated Configuration Tanmay_Training_Sender | Sender | http://test.com/tanmay_training | OutboundAsync |  | </td><td><a target="_blank" href="http://SAPPO.craveinfotech.com:50000/dir/read/ext?method=PLAIN&TYPE=AllInOne&KEY=Tanmay_Training_Sender%7CSender%7Chttp%3A%2F%2Ftest.com%2Ftanmay_training%7COutboundAsync%7C%7C&VC=DIR&UC=false&release=7.0">R</a></td><td>&nbsp;</td><td>&nbsp;
+</td>
+</tr>
+<tr>
+<td>
+Integrated Configuration  | SENDER | dummy.namespace.com | SenderOutbAsyncDummy |  | </td><td><a target="_blank" href="http://SAPPO.craveinfotech.com:50000/dir/read/ext?method=PLAIN&TYPE=AllInOne&KEY=%7CSENDER%7Cdummy.namespace.com%7CSenderOutbAsyncDummy%7C%7C&VC=DIR&UC=false&release=7.0">R</a></td><td>&nbsp;</td><td>&nbsp;
+</td>
+</tr>
+<tr>
+<td>
+Integrated Configuration  | BSCLNT300 | urn:sap-com:document:sap:idoc:messages | ORDERS.ORDERS05 |  | </td><td><a target="_blank" href="http://SAPPO.craveinfotech.com:50000/dir/read/ext?method=PLAIN&TYPE=AllInOne&KEY=%7CBSCLNT300%7Curn%3Asap-com%3Adocument%3Asap%3Aidoc%3Amessages%7CORDERS.ORDERS05%7C%7C&VC=DIR&UC=false&release=7.0">R</a></td><td>&nbsp;</td><td>&nbsp;
+</td>
+</tr>
+<tr>
+<td>
+Integrated Configuration Training_01_Vaishnavi | Sender | http://test.com/vaishnavi_po_training_01 | OutboundAsync |  | </td><td><a target="_blank" href="http://SAPPO.craveinfotech.com:50000/dir/read/ext?method=PLAIN&TYPE=AllInOne&KEY=Training_01_Vaishnavi%7CSender%7Chttp%3A%2F%2Ftest.com%2Fvaishnavi_po_training_01%7COutboundAsync%7C%7C&VC=DIR&UC=false&release=7.0">R</a></td><td>&nbsp;</td><td>&nbsp;
+</td>
+</tr>
+<tr>
+<td>
+Integrated Configuration Rutuja_Demo1_sender | sender | http://test.com/rutuja02 | Add_outb_Sync |  | </td><td><a target="_blank" href="http://SAPPO.craveinfotech.com:50000/dir/read/ext?method=PLAIN&TYPE=AllInOne&KEY=Rutuja_Demo1_sender%7Csender%7Chttp%3A%2F%2Ftest.com%2Frutuja02%7CAdd_outb_Sync%7C%7C&VC=DIR&UC=false&release=7.0">R</a></td><td>&nbsp;</td><td>&nbsp;
+</td>
+</tr>
+<tr>
+<td>
+Integrated Configuration VaibhavSender | Sender | http://test.com/vaibhav02 | Add_Outb_Sync |  | </td><td><a target="_blank" href="http://SAPPO.craveinfotech.com:50000/dir/read/ext?method=PLAIN&TYPE=AllInOne&KEY=VaibhavSender%7CSender%7Chttp%3A%2F%2Ftest.com%2Fvaibhav02%7CAdd_Outb_Sync%7C%7C&VC=DIR&UC=false&release=7.0">R</a></td><td>&nbsp;</td><td>&nbsp;
+</td>
+</tr>
+<tr>
+<td>
+Integrated Configuration  | SENDER | http://craveinfotech.com/poc/008 | POC_008_Outb_Async |  | </td><td><a target="_blank" href="http://SAPPO.craveinfotech.com:50000/dir/read/ext?method=PLAIN&TYPE=AllInOne&KEY=%7CSENDER%7Chttp%3A%2F%2Fcraveinfotech.com%2Fpoc%2F008%7CPOC_008_Outb_Async%7C%7C&VC=DIR&UC=false&release=7.0">R</a></td><td>&nbsp;</td><td>&nbsp;
+</td>
+</tr>
+<tr>
+<td>
+Integrated Configuration  | SENDER | http://craveinfotech.com/poc/009 | POC_009_Select_Outb_Sync |  | </td><td><a target="_blank" href="http://SAPPO.craveinfotech.com:50000/dir/read/ext?method=PLAIN&TYPE=AllInOne&KEY=%7CSENDER%7Chttp%3A%2F%2Fcraveinfotech.com%2Fpoc%2F009%7CPOC_009_Select_Outb_Sync%7C%7C&VC=DIR&UC=false&release=7.0">R</a></td><td>&nbsp;</td><td>&nbsp;
+</td>
+</tr>
+<tr>
+<td>
+Integrated Configuration  | BSCLNT300 | http://craveinfotech.com/test_develop/001 | OutBoundAsync |  | </td><td><a target="_blank" href="http://SAPPO.craveinfotech.com:50000/dir/read/ext?method=PLAIN&TYPE=AllInOne&KEY=%7CBSCLNT300%7Chttp%3A%2F%2Fcraveinfotech.com%2Ftest_develop%2F001%7COutBoundAsync%7C%7C&VC=DIR&UC=false&release=7.0">R</a></td><td>&nbsp;</td><td>&nbsp;
+</td>
+</tr>
+<tr>
+<td>
+Integrated Configuration Taining01_Sender | sender | http://test.com/harsh | OutboundAsync |  | </td><td><a target="_blank" href="http://SAPPO.craveinfotech.com:50000/dir/read/ext?method=PLAIN&TYPE=AllInOne&KEY=Taining01_Sender%7Csender%7Chttp%3A%2F%2Ftest.com%2Fharsh%7COutboundAsync%7C%7C&VC=DIR&UC=false&release=7.0">R</a></td><td>&nbsp;</td><td>&nbsp;
+</td>
+</tr>
+<tr>
+<td>
+Integrated Configuration  | BSCLNT300 | http://craveinfotech.com/poc/013 | POC_013_Proxy_Outb_Async |  | </td><td><a target="_blank" href="http://SAPPO.craveinfotech.com:50000/dir/read/ext?method=PLAIN&TYPE=AllInOne&KEY=%7CBSCLNT300%7Chttp%3A%2F%2Fcraveinfotech.com%2Fpoc%2F013%7CPOC_013_Proxy_Outb_Async%7C%7C&VC=DIR&UC=false&release=7.0">R</a></td><td>&nbsp;</td><td>&nbsp;
+</td>
+</tr>
+<tr>
+<td>
+Integrated Configuration TejasDemo04 | Sender | http://test.com/tejas03 | Outb_Sync |  | </td><td><a target="_blank" href="http://SAPPO.craveinfotech.com:50000/dir/read/ext?method=PLAIN&TYPE=AllInOne&KEY=TejasDemo04%7CSender%7Chttp%3A%2F%2Ftest.com%2Ftejas03%7COutb_Sync%7C%7C&VC=DIR&UC=false&release=7.0">R</a></td><td>&nbsp;</td><td>&nbsp;
+</td>
+</tr>
+<tr>
+<td>
+Integrated Configuration Calculators | Sender | http://test.com/rutuja02 | Add_outb_Sync |  | </td><td><a target="_blank" href="http://SAPPO.craveinfotech.com:50000/dir/read/ext?method=PLAIN&TYPE=AllInOne&KEY=Calculators%7CSender%7Chttp%3A%2F%2Ftest.com%2Frutuja02%7CAdd_outb_Sync%7C%7C&VC=DIR&UC=false&release=7.0">R</a></td><td>&nbsp;</td><td>&nbsp;
+</td>
+</tr>
+<tr>
+<td>
+Integrated Configuration  | SENDER | http://craveinfotech.com/poc/009 | POC_009_Insert_Outb_Sync |  | </td><td><a target="_blank" href="http://SAPPO.craveinfotech.com:50000/dir/read/ext?method=PLAIN&TYPE=AllInOne&KEY=%7CSENDER%7Chttp%3A%2F%2Fcraveinfotech.com%2Fpoc%2F009%7CPOC_009_Insert_Outb_Sync%7C%7C&VC=DIR&UC=false&release=7.0">R</a></td><td>&nbsp;</td><td>&nbsp;
+</td>
+</tr>
+<tr>
+<td>
+Integrated Configuration LCSVDEMO_SENDER | LCSVDEMO_CONCAT | http://test.com/lcsvdemo | outbsync |  | </td><td><a target="_blank" href="http://SAPPO.craveinfotech.com:50000/dir/read/ext?method=PLAIN&TYPE=AllInOne&KEY=LCSVDEMO_SENDER%7CLCSVDEMO_CONCAT%7Chttp%3A%2F%2Ftest.com%2Flcsvdemo%7Coutbsync%7C%7C&VC=DIR&UC=false&release=7.0">R</a></td><td>&nbsp;</td><td>&nbsp;
+</td>
+</tr>
+<tr>
+<td>
+Integrated Configuration TejasDemo01_Sender | Sender | http://test.com/tejas | OutboundAsync |  | </td><td><a target="_blank" href="http://SAPPO.craveinfotech.com:50000/dir/read/ext?method=PLAIN&TYPE=AllInOne&KEY=TejasDemo01_Sender%7CSender%7Chttp%3A%2F%2Ftest.com%2Ftejas%7COutboundAsync%7C%7C&VC=DIR&UC=false&release=7.0">R</a></td><td>&nbsp;</td><td>&nbsp;
+</td>
+</tr>
+<tr>
+<td>
+Integrated Configuration Tejas_Demo_JM | Sender | http://test.com/javamapping_demo | SIOA_Src_JavaMapping |  | </td><td><a target="_blank" href="http://SAPPO.craveinfotech.com:50000/dir/read/ext?method=PLAIN&TYPE=AllInOne&KEY=Tejas_Demo_JM%7CSender%7Chttp%3A%2F%2Ftest.com%2Fjavamapping_demo%7CSIOA_Src_JavaMapping%7C%7C&VC=DIR&UC=false&release=7.0">R</a></td><td>&nbsp;</td><td>&nbsp;
+</td>
+</tr>
+<tr>
+<td>
+Integrated Configuration  | SENDER | http://craveinfotech.com/poc/011 | POC_011_Outb_Async |  | </td><td><a target="_blank" href="http://SAPPO.craveinfotech.com:50000/dir/read/ext?method=PLAIN&TYPE=AllInOne&KEY=%7CSENDER%7Chttp%3A%2F%2Fcraveinfotech.com%2Fpoc%2F011%7CPOC_011_Outb_Async%7C%7C&VC=DIR&UC=false&release=7.0">R</a></td><td>&nbsp;</td><td>&nbsp;
+</td>
+</tr>
+<tr>
+<td>
+Integrated Configuration TejasDemo04 | SENDER | http://test.com/tejas04 | Tejas_JDBC_Outb_Async |  | </td><td><a target="_blank" href="http://SAPPO.craveinfotech.com:50000/dir/read/ext?method=PLAIN&TYPE=AllInOne&KEY=TejasDemo04%7CSENDER%7Chttp%3A%2F%2Ftest.com%2Ftejas04%7CTejas_JDBC_Outb_Async%7C%7C&VC=DIR&UC=false&release=7.0">R</a></td><td>&nbsp;</td><td>&nbsp;
+</td>
+</tr>
+<tr>
+<td>
+Integrated Configuration  | SENDER | http://craveinfotech.com/poc/005 | POC_005_Outb_Sync |  | </td><td><a target="_blank" href="http://SAPPO.craveinfotech.com:50000/dir/read/ext?method=PLAIN&TYPE=AllInOne&KEY=%7CSENDER%7Chttp%3A%2F%2Fcraveinfotech.com%2Fpoc%2F005%7CPOC_005_Outb_Sync%7C%7C&VC=DIR&UC=false&release=7.0">R</a></td><td>&nbsp;</td><td>&nbsp;
+</td>
+</tr>
+<tr>
+<td>
+Integrated Configuration Deepak_Sender | Sender | http://test.com/deepak | OutboundAsync |  | </td><td><a target="_blank" href="http://SAPPO.craveinfotech.com:50000/dir/read/ext?method=PLAIN&TYPE=AllInOne&KEY=Deepak_Sender%7CSender%7Chttp%3A%2F%2Ftest.com%2Fdeepak%7COutboundAsync%7C%7C&VC=DIR&UC=false&release=7.0">R</a></td><td>&nbsp;</td><td>&nbsp;
+</td>
+</tr>
+<tr>
+<td>
+Integrated Configuration  | SENDER | http://craveinfotech.com/poc/003 | POC_003_Outb_Sync |  | </td><td><a target="_blank" href="http://SAPPO.craveinfotech.com:50000/dir/read/ext?method=PLAIN&TYPE=AllInOne&KEY=%7CSENDER%7Chttp%3A%2F%2Fcraveinfotech.com%2Fpoc%2F003%7CPOC_003_Outb_Sync%7C%7C&VC=DIR&UC=false&release=7.0">R</a></td><td>&nbsp;</td><td>&nbsp;
+</td>
+</tr>
+<tr>
+<td>
+Integrated Configuration  | SENDER | http://craveinfotech.com/poc/015 | POC_015_Outb_Async |  | </td><td><a target="_blank" href="http://SAPPO.craveinfotech.com:50000/dir/read/ext?method=PLAIN&TYPE=AllInOne&KEY=%7CSENDER%7Chttp%3A%2F%2Fcraveinfotech.com%2Fpoc%2F015%7CPOC_015_Outb_Async%7C%7C&VC=DIR&UC=false&release=7.0">R</a></td><td>&nbsp;</td><td>&nbsp;
+</td>
+</tr>
+<tr>
+<td>
+Integrated Configuration Mayank01_Sender | Sender | http://test.com/mayank | outboundAsync |  | </td><td><a target="_blank" href="http://SAPPO.craveinfotech.com:50000/dir/read/ext?method=PLAIN&TYPE=AllInOne&KEY=Mayank01_Sender%7CSender%7Chttp%3A%2F%2Ftest.com%2Fmayank%7CoutboundAsync%7C%7C&VC=DIR&UC=false&release=7.0">R</a></td><td>&nbsp;</td><td>&nbsp;
+</td>
+</tr>
+<tr>
+<td>
+Integrated Configuration  | SENDER | http://craveinfotech.com/new_test/001 | NEW_TEST_001_Outb_Sync |  | </td><td><a target="_blank" href="http://SAPPO.craveinfotech.com:50000/dir/read/ext?method=PLAIN&TYPE=AllInOne&KEY=%7CSENDER%7Chttp%3A%2F%2Fcraveinfotech.com%2Fnew_test%2F001%7CNEW_TEST_001_Outb_Sync%7C%7C&VC=DIR&UC=false&release=7.0">R</a></td><td>&nbsp;</td><td>&nbsp;
+</td>
+</tr>
+<tr>
+<td>
+Integrated Configuration  | BSCLNT300 | http://craveinfotech.com/new_test/001 | NEW_TEST_001_Outb_Sync |  | </td><td><a target="_blank" href="http://SAPPO.craveinfotech.com:50000/dir/read/ext?method=PLAIN&TYPE=AllInOne&KEY=%7CBSCLNT300%7Chttp%3A%2F%2Fcraveinfotech.com%2Fnew_test%2F001%7CNEW_TEST_001_Outb_Sync%7C%7C&VC=DIR&UC=false&release=7.0">R</a></td><td>&nbsp;</td><td>&nbsp;
+</td>
+</tr>
+<tr>
+<td>
+Integrated Configuration  | ERP_ECC_RUTUJA_800_GLOBAL | http://crave.com/f2f/SupplierPayment | ST_OUT_ASYNC_F2 |  | </td><td><a target="_blank" href="http://SAPPO.craveinfotech.com:50000/dir/read/ext?method=PLAIN&TYPE=AllInOne&KEY=%7CERP_ECC_RUTUJA_800_GLOBAL%7Chttp%3A%2F%2Fcrave.com%2Ff2f%2FSupplierPayment%7CST_OUT_ASYNC_F2%7C%7C&VC=DIR&UC=false&release=7.0">R</a></td><td>&nbsp;</td><td>&nbsp;
+</td>
+</tr>
+<tr>
+<td>
+Integrated Configuration  | SENDER | http://craveinfotech.com/poc/018 | POC_018_Outb_Async |  | </td><td><a target="_blank" href="http://SAPPO.craveinfotech.com:50000/dir/read/ext?method=PLAIN&TYPE=AllInOne&KEY=%7CSENDER%7Chttp%3A%2F%2Fcraveinfotech.com%2Fpoc%2F018%7CPOC_018_Outb_Async%7C%7C&VC=DIR&UC=false&release=7.0">R</a></td><td>&nbsp;</td><td>&nbsp;
+</td>
+</tr>
+<tr>
+<td>
+Integrated Configuration demo01_sender | Sender | http://test.com/demo01 | demo01_Outb_Sync |  | </td><td><a target="_blank" href="http://SAPPO.craveinfotech.com:50000/dir/read/ext?method=PLAIN&TYPE=AllInOne&KEY=demo01_sender%7CSender%7Chttp%3A%2F%2Ftest.com%2Fdemo01%7Cdemo01_Outb_Sync%7C%7C&VC=DIR&UC=false&release=7.0">R</a></td><td>&nbsp;</td><td>&nbsp;
+</td>
+</tr>
+<tr>
+<td>
+Integrated Configuration  | SENDER | http://craveinfotech.com/poc/002 | POC_002_Outb_Sync |  | </td><td><a target="_blank" href="http://SAPPO.craveinfotech.com:50000/dir/read/ext?method=PLAIN&TYPE=AllInOne&KEY=%7CSENDER%7Chttp%3A%2F%2Fcraveinfotech.com%2Fpoc%2F002%7CPOC_002_Outb_Sync%7C%7C&VC=DIR&UC=false&release=7.0">R</a></td><td>&nbsp;</td><td>&nbsp;
+</td>
+</tr>
+<tr>
+<td>
+Integrated Configuration  | SENDER | http://craveinfotech.com/poc/010 | POC_010_SOAP_Outb_Sync |  | </td><td><a target="_blank" href="http://SAPPO.craveinfotech.com:50000/dir/read/ext?method=PLAIN&TYPE=AllInOne&KEY=%7CSENDER%7Chttp%3A%2F%2Fcraveinfotech.com%2Fpoc%2F010%7CPOC_010_SOAP_Outb_Sync%7C%7C&VC=DIR&UC=false&release=7.0">R</a></td><td>&nbsp;</td><td>&nbsp;
+</td>
+</tr>
+<tr>
+<td>
+Integrated Configuration VaibhavSender | Sender | http://test.com/vaibhav | OutboundAsync |  | </td><td><a target="_blank" href="http://SAPPO.craveinfotech.com:50000/dir/read/ext?method=PLAIN&TYPE=AllInOne&KEY=VaibhavSender%7CSender%7Chttp%3A%2F%2Ftest.com%2Fvaibhav%7COutboundAsync%7C%7C&VC=DIR&UC=false&release=7.0">R</a></td><td>&nbsp;</td><td>&nbsp;
+</td>
+</tr>
+<tr>
+<td>
+Integrated Configuration  | SENDER | http://craveinfotech.com/poc/020 | POC_020_Outb_Sync |  | BSCLNT300</td><td><a target="_blank" href="http://SAPPO.craveinfotech.com:50000/dir/read/ext?method=PLAIN&TYPE=AllInOne&KEY=%7CSENDER%7Chttp%3A%2F%2Fcraveinfotech.com%2Fpoc%2F020%7CPOC_020_Outb_Sync%7C%7CBSCLNT300&VC=DIR&UC=false&release=7.0">R</a></td><td>&nbsp;</td><td>&nbsp;
+</td>
+</tr>
+<tr>
+<td>
+Integrated Configuration TejasDemo01_Sender | Sender | http://test.com/tejas02 | Add_Outb_Sync |  | </td><td><a target="_blank" href="http://SAPPO.craveinfotech.com:50000/dir/read/ext?method=PLAIN&TYPE=AllInOne&KEY=TejasDemo01_Sender%7CSender%7Chttp%3A%2F%2Ftest.com%2Ftejas02%7CAdd_Outb_Sync%7C%7C&VC=DIR&UC=false&release=7.0">R</a></td><td>&nbsp;</td><td>&nbsp;
+</td>
+</tr>
+<tr>
+<td>
+Integrated Configuration  | SENDER | http://craveinfotech.com/new_test/017 | New_Test_017_service_outbound | Calculator | webservice</td><td><a target="_blank" href="http://SAPPO.craveinfotech.com:50000/dir/read/ext?method=PLAIN&TYPE=AllInOne&KEY=%7CSENDER%7Chttp%3A%2F%2Fcraveinfotech.com%2Fnew_test%2F017%7CNew_Test_017_service_outbound%7CCalculator%7Cwebservice&VC=DIR&UC=false&release=7.0">R</a></td><td>&nbsp;</td><td>&nbsp;
+</td>
+</tr>
+<tr>
+<td>
+Integrated Configuration  | ERP_ECC_800_TP_GLOBAL | http://techiepress.com/F2F/Supplierpayments | SI_OUT_ASYNC_SP_F2F_SOURCE |  | </td><td><a target="_blank" href="http://SAPPO.craveinfotech.com:50000/dir/read/ext?method=PLAIN&TYPE=AllInOne&KEY=%7CERP_ECC_800_TP_GLOBAL%7Chttp%3A%2F%2Ftechiepress.com%2FF2F%2FSupplierpayments%7CSI_OUT_ASYNC_SP_F2F_SOURCE%7C%7C&VC=DIR&UC=false&release=7.0">R</a></td><td>&nbsp;</td><td>&nbsp;
+</td>
+</tr>
+<tr>
+<td>
+Integrated Configuration VC | Sender | http://test.com/vaibhav02 | Add_Outb_Sync |  | </td><td><a target="_blank" href="http://SAPPO.craveinfotech.com:50000/dir/read/ext?method=PLAIN&TYPE=AllInOne&KEY=VC%7CSender%7Chttp%3A%2F%2Ftest.com%2Fvaibhav02%7CAdd_Outb_Sync%7C%7C&VC=DIR&UC=false&release=7.0">R</a></td><td>&nbsp;</td><td>&nbsp;
+</td>
+</tr>
+<tr>
+<td>
+Integrated Configuration  | SENDER | http://craveinfotech.com/new_test/001 | NEW_TEST_001_Outb_Sync | Calculator | Webservice</td><td><a target="_blank" href="http://SAPPO.craveinfotech.com:50000/dir/read/ext?method=PLAIN&TYPE=AllInOne&KEY=%7CSENDER%7Chttp%3A%2F%2Fcraveinfotech.com%2Fnew_test%2F001%7CNEW_TEST_001_Outb_Sync%7CCalculator%7CWebservice&VC=DIR&UC=false&release=7.0">R</a></td><td>&nbsp;</td><td>&nbsp;
+</td>
+</tr>
+<tr>
+<td>
+Integrated Configuration  | BSCLNT300 | http://craveinfotech.com/poc/014 | POC_014_Outb_Async |  | </td><td><a target="_blank" href="http://SAPPO.craveinfotech.com:50000/dir/read/ext?method=PLAIN&TYPE=AllInOne&KEY=%7CBSCLNT300%7Chttp%3A%2F%2Fcraveinfotech.com%2Fpoc%2F014%7CPOC_014_Outb_Async%7C%7C&VC=DIR&UC=false&release=7.0">R</a></td><td>&nbsp;</td><td>&nbsp;
+</td>
+</tr>
+<tr>
+<td>
+Integrated Configuration PY_F2F_CUSTOMER_GLOBAL | BS_F2F_CUST_SYS | http://craveinfotech.com/interfacedemo/file2file | SI_OUT_F2F_CUST_PO_CREATE |  | </td><td><a target="_blank" href="http://SAPPO.craveinfotech.com:50000/dir/read/ext?method=PLAIN&TYPE=AllInOne&KEY=PY_F2F_CUSTOMER_GLOBAL%7CBS_F2F_CUST_SYS%7Chttp%3A%2F%2Fcraveinfotech.com%2Finterfacedemo%2Ffile2file%7CSI_OUT_F2F_CUST_PO_CREATE%7C%7C&VC=DIR&UC=false&release=7.0">R</a></td><td>&nbsp;</td><td>&nbsp;
+</td>
+</tr>
+<tr>
+<td>
+Integrated Configuration  | SENDER | http://craveinfotech.com/product_test/001 | Product_Test_001_Add_Outb_Sync | Calculator | MyService</td><td><a target="_blank" href="http://SAPPO.craveinfotech.com:50000/dir/read/ext?method=PLAIN&TYPE=AllInOne&KEY=%7CSENDER%7Chttp%3A%2F%2Fcraveinfotech.com%2Fproduct_test%2F001%7CProduct_Test_001_Add_Outb_Sync%7CCalculator%7CMyService&VC=DIR&UC=false&release=7.0">R</a></td><td>&nbsp;</td><td>&nbsp;
+</td>
+</tr>
+<tr>
+<td>
+Integrated Configuration  | SENDER | Dummy_Namespace | Dummy_Sender |  | </td><td><a target="_blank" href="http://SAPPO.craveinfotech.com:50000/dir/read/ext?method=PLAIN&TYPE=AllInOne&KEY=%7CSENDER%7CDummy_Namespace%7CDummy_Sender%7C%7C&VC=DIR&UC=false&release=7.0">R</a></td><td>&nbsp;</td><td>&nbsp;
+</td>
+</tr>
+<tr>
+<td>
+Integrated Configuration  | BC_VENDOR | http://picourse.com/INVOICE/A_VENDORS | Invoice_OA |  | </td><td><a target="_blank" href="http://SAPPO.craveinfotech.com:50000/dir/read/ext?method=PLAIN&TYPE=AllInOne&KEY=%7CBC_VENDOR%7Chttp%3A%2F%2Fpicourse.com%2FINVOICE%2FA_VENDORS%7CInvoice_OA%7C%7C&VC=DIR&UC=false&release=7.0">R</a></td><td>&nbsp;</td><td>&nbsp;
+</td>
+</tr>
+<tr>
+<td>
+Integrated Configuration  | RECEIVER | http://craveinfotech.com/poc/013 | POC_013_REST_Outb_Async_response |  | *</td><td><a target="_blank" href="http://SAPPO.craveinfotech.com:50000/dir/read/ext?method=PLAIN&TYPE=AllInOne&KEY=%7CRECEIVER%7Chttp%3A%2F%2Fcraveinfotech.com%2Fpoc%2F013%7CPOC_013_REST_Outb_Async_response%7C%7C*&VC=DIR&UC=false&release=7.0">R</a></td><td>&nbsp;</td><td>&nbsp;
+</td>
+</tr>
+<tr>
+<td>
+Integrated Configuration  | Sender_SOAPUI | http://craveinfotech.com/RestToRest | SI_Fetch_Object_Out |  | </td><td><a target="_blank" href="http://SAPPO.craveinfotech.com:50000/dir/read/ext?method=PLAIN&TYPE=AllInOne&KEY=%7CSender_SOAPUI%7Chttp%3A%2F%2Fcraveinfotech.com%2FRestToRest%7CSI_Fetch_Object_Out%7C%7C&VC=DIR&UC=false&release=7.0">R</a></td><td>&nbsp;</td><td>&nbsp;
+</td>
+</tr>
+<tr>
+<td>
+Integrated Configuration PY_F2F_CUST_GLOBAL | BS_F2F_CUST_SYSTEM | http://craveinfotech.com/interfacedemo/file2file | SI_OUT_F2F_CUST_PO_CREATE |  | </td><td><a target="_blank" href="http://SAPPO.craveinfotech.com:50000/dir/read/ext?method=PLAIN&TYPE=AllInOne&KEY=PY_F2F_CUST_GLOBAL%7CBS_F2F_CUST_SYSTEM%7Chttp%3A%2F%2Fcraveinfotech.com%2Finterfacedemo%2Ffile2file%7CSI_OUT_F2F_CUST_PO_CREATE%7C%7C&VC=DIR&UC=false&release=7.0">R</a></td><td>&nbsp;</td><td>&nbsp;
+</td>
+</tr>
+<tr>
+<td>
+Integrated Configuration  | SENDER | http://craveinfotech.com/poc/010 | POC_010_FTP_Outb_Async_response |  | </td><td><a target="_blank" href="http://SAPPO.craveinfotech.com:50000/dir/read/ext?method=PLAIN&TYPE=AllInOne&KEY=%7CSENDER%7Chttp%3A%2F%2Fcraveinfotech.com%2Fpoc%2F010%7CPOC_010_FTP_Outb_Async_response%7C%7C&VC=DIR&UC=false&release=7.0">R</a></td><td>&nbsp;</td><td>&nbsp;
+</td>
+</tr>
+<tr>
+<td>
+Integrated Configuration  | SENDER | http://craveinfotech.com/poc/017/dummy | POC_017_Dummy_Outb_Async |  | </td><td><a target="_blank" href="http://SAPPO.craveinfotech.com:50000/dir/read/ext?method=PLAIN&TYPE=AllInOne&KEY=%7CSENDER%7Chttp%3A%2F%2Fcraveinfotech.com%2Fpoc%2F017%2Fdummy%7CPOC_017_Dummy_Outb_Async%7C%7C&VC=DIR&UC=false&release=7.0">R</a></td><td>&nbsp;</td><td>&nbsp;
+</td>
+</tr>
+<tr>
+<td>
+Integrated Configuration Training01_Sender | Sender | http://test.com/training02 | Add_Outb_Sync |  | </td><td><a target="_blank" href="http://SAPPO.craveinfotech.com:50000/dir/read/ext?method=PLAIN&TYPE=AllInOne&KEY=Training01_Sender%7CSender%7Chttp%3A%2F%2Ftest.com%2Ftraining02%7CAdd_Outb_Sync%7C%7C&VC=DIR&UC=false&release=7.0">R</a></td><td>&nbsp;</td><td>&nbsp;
+</td>
+</tr>
+<tr>
+<td>
+Integrated Configuration  | BSCLNT300 | http://craveinfotech.com/poc/012 | POC_012_Outb_Async |  | </td><td><a target="_blank" href="http://SAPPO.craveinfotech.com:50000/dir/read/ext?method=PLAIN&TYPE=AllInOne&KEY=%7CBSCLNT300%7Chttp%3A%2F%2Fcraveinfotech.com%2Fpoc%2F012%7CPOC_012_Outb_Async%7C%7C&VC=DIR&UC=false&release=7.0">R</a></td><td>&nbsp;</td><td>&nbsp;
+</td>
+</tr>
+<tr>
+<td>
+Integrated Configuration  | BC_REST_SENDER | http://craveinfotech.com/RestToRest | SI_Fetch_Object_Out |  | </td><td><a target="_blank" href="http://SAPPO.craveinfotech.com:50000/dir/read/ext?method=PLAIN&TYPE=AllInOne&KEY=%7CBC_REST_SENDER%7Chttp%3A%2F%2Fcraveinfotech.com%2FRestToRest%7CSI_Fetch_Object_Out%7C%7C&VC=DIR&UC=false&release=7.0">R</a></td><td>&nbsp;</td><td>&nbsp;
+</td>
+</tr>
+</table>
+</pre>
+<hr>
+<p>
+
+
+</p>
+<hr>
+<h3>Response XML</h3>
+<textarea name="response" cols="50" rows="10" readonly>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;queryResult&gt;&lt;headerInfo xmlns=&quot;&quot;&gt;&lt;rows count=&quot;72&quot; /&gt;&lt;cols count=&quot;1&quot; /&gt;&lt;colDef&gt;&lt;def type=&quot;RA_XILINK&quot; pos=&quot;0&quot; /&gt;&lt;/colDef&gt;&lt;/headerInfo&gt;&lt;typeInfo xmlns=&quot;&quot;&gt;&lt;type id=&quot;AllInOne&quot;&gt;&lt;keyElem name=&quot;FROMPARTY&quot; pos=&quot;0&quot; /&gt;&lt;keyElem name=&quot;FROMSRVC&quot; pos=&quot;1&quot; /&gt;&lt;keyElem name=&quot;FROMACTIONNS&quot; pos=&quot;2&quot; /&gt;&lt;keyElem name=&quot;FROMACTION&quot; pos=&quot;3&quot; /&gt;&lt;keyElem name=&quot;TOPARTY&quot; pos=&quot;4&quot; /&gt;&lt;keyElem name=&quot;TOSRVC&quot; pos=&quot;5&quot; /&gt;&lt;/type&gt;&lt;/typeInfo&gt;&lt;matrix xmlns=&quot;&quot;&gt;&lt;r&gt;&lt;c&gt;&lt;qref isMod=&quot;false&quot; isInUnderL=&quot;false&quot;&gt;&lt;ref&gt;&lt;vc vcType=&quot;D&quot;&gt;&lt;clCxt consider=&quot;L&quot; /&gt;&lt;/vc&gt;&lt;key typeID=&quot;AllInOne&quot; oid=&quot;017d8dad476430d68ec33330465acdd1&quot;&gt;&lt;elem /&gt;&lt;elem&gt;BC_Sender_Postman&lt;/elem&gt;&lt;elem&gt;http://craveinfotech.com/restfulapis&lt;/elem&gt;&lt;elem&gt;SI_OUT_Restful_object_list&lt;/elem&gt;&lt;elem /&gt;&lt;elem /&gt;&lt;/key&gt;&lt;vspec type=&quot;4&quot; id=&quot;a2bca18bfe1311eea5af00000013dc2e&quot; deleted=&quot;false&quot; /&gt;&lt;/ref&gt;&lt;/qref&gt;&lt;/c&gt;&lt;/r&gt;&lt;r&gt;&lt;c&gt;&lt;qref isMod=&quot;false&quot; isInUnderL=&quot;false&quot;&gt;&lt;ref&gt;&lt;vc vcType=&quot;D&quot;&gt;&lt;clCxt consider=&quot;L&quot; /&gt;&lt;/vc&gt;&lt;key typeID=&quot;AllInOne&quot; oid=&quot;04b25b6f8dc2300f8c4e33378eedea73&quot;&gt;&lt;elem /&gt;&lt;elem&gt;SENDER&lt;/elem&gt;&lt;elem&gt;http://craveinfotech.com/poc/007&lt;/elem&gt;&lt;elem&gt;POC_007_Outb_Sync&lt;/elem&gt;&lt;elem /&gt;&lt;elem /&gt;&lt;/key&gt;&lt;vspec type=&quot;4&quot; id=&quot;21365ded018a11eec88700000013dc2e&quot; deleted=&quot;false&quot; /&gt;&lt;/ref&gt;&lt;/qref&gt;&lt;/c&gt;&lt;/r&gt;&lt;r&gt;&lt;c&gt;&lt;qref isMod=&quot;false&quot; isInUnderL=&quot;false&quot;&gt;&lt;ref&gt;&lt;vc vcType=&quot;D&quot;&gt;&lt;clCxt consider=&quot;L&quot; /&gt;&lt;/vc&gt;&lt;key typeID=&quot;AllInOne&quot; oid=&quot;073541e84d983200b9c20e9845d740da&quot;&gt;&lt;elem /&gt;&lt;elem&gt;SENDER&lt;/elem&gt;&lt;elem&gt;http://craveinfotech.com/poc/001&lt;/elem&gt;&lt;elem&gt;POC_001_Outb_Sync&lt;/elem&gt;&lt;elem /&gt;&lt;elem /&gt;&lt;/key&gt;&lt;vspec type=&quot;4&quot; id=&quot;e2a24a86018411eebf1c00000013dc2e&quot; deleted=&quot;false&quot; /&gt;&lt;/ref&gt;&lt;/qref&gt;&lt;/c&gt;&lt;/r&gt;&lt;r&gt;&lt;c&gt;&lt;qref isMod=&quot;false&quot; isInUnderL=&quot;false&quot;&gt;&lt;ref&gt;&lt;vc vcType=&quot;D&quot;&gt;&lt;clCxt consider=&quot;L&quot; /&gt;&lt;/vc&gt;&lt;key typeID=&quot;AllInOne&quot; oid=&quot;0da3968ee71c390090030fd67fe9b11c&quot;&gt;&lt;elem&gt;Vishal_Training01_Sender_copy&lt;/elem&gt;&lt;elem&gt;Sender&lt;/elem&gt;&lt;elem&gt;http://test.com/vishal_002_training_01&lt;/elem&gt;&lt;elem&gt;OutboundAsync&lt;/elem&gt;&lt;elem /&gt;&lt;elem /&gt;&lt;/key&gt;&lt;vspec type=&quot;4&quot; id=&quot;a93d5a336c4311f0950600000013dc2e&quot; deleted=&quot;false&quot; /&gt;&lt;/ref&gt;&lt;/qref&gt;&lt;/c&gt;&lt;/r&gt;&lt;r&gt;&lt;c&gt;&lt;qref isMod=&quot;false&quot; isInUnderL=&quot;false&quot;&gt;&lt;ref&gt;&lt;vc vcType=&quot;D&quot;&gt;&lt;clCxt consider=&quot;L&quot; /&gt;&lt;/vc&gt;&lt;key typeID=&quot;AllInOne&quot; oid=&quot;0e73a45794f438878baad7d586a643ff&quot;&gt;&lt;elem&gt;Mayank003&lt;/elem&gt;&lt;elem&gt;Sender&lt;/elem&gt;&lt;elem&gt;http://test.com/mayank02&lt;/elem&gt;&lt;elem&gt;ADD_out_sync&lt;/elem&gt;&lt;elem /&gt;&lt;elem /&gt;&lt;/key&gt;&lt;vspec type=&quot;4&quot; id=&quot;ea82d09b635011eea48a00000013dc2e&quot; deleted=&quot;false&quot; /&gt;&lt;/ref&gt;&lt;/qref&gt;&lt;/c&gt;&lt;/r&gt;&lt;r&gt;&lt;c&gt;&lt;qref isMod=&quot;false&quot; isInUnderL=&quot;false&quot;&gt;&lt;ref&gt;&lt;vc vcType=&quot;D&quot;&gt;&lt;clCxt consider=&quot;L&quot; /&gt;&lt;/vc&gt;&lt;key typeID=&quot;AllInOne&quot; oid=&quot;0ea652ceef833911a3b61b859796806c&quot;&gt;&lt;elem /&gt;&lt;elem&gt;SENDER&lt;/elem&gt;&lt;elem&gt;http://craveinfotech.com/poc/006&lt;/elem&gt;&lt;elem&gt;POC_006_Outb_Async&lt;/elem&gt;&lt;elem /&gt;&lt;elem /&gt;&lt;/key&gt;&lt;vspec type=&quot;4&quot; id=&quot;35153485039f11eeb87a00000013dc2e&quot; deleted=&quot;false&quot; /&gt;&lt;/ref&gt;&lt;/qref&gt;&lt;/c&gt;&lt;/r&gt;&lt;r&gt;&lt;c&gt;&lt;qref isMod=&quot;false&quot; isInUnderL=&quot;false&quot;&gt;&lt;ref&gt;&lt;vc vcType=&quot;D&quot;&gt;&lt;clCxt consider=&quot;L&quot; /&gt;&lt;/vc&gt;&lt;key typeID=&quot;AllInOne&quot; oid=&quot;0fa4c66cf18f3bc4a1ae958d820fbeb7&quot;&gt;&lt;elem /&gt;&lt;elem&gt;TEST_MigrationHelper&lt;/elem&gt;&lt;elem&gt;TESTING&lt;/elem&gt;&lt;elem&gt;TESTING&lt;/elem&gt;&lt;elem /&gt;&lt;elem /&gt;&lt;/key&gt;&lt;vspec type=&quot;4&quot; id=&quot;55b78969298d11ef8ed700000013dc2e&quot; deleted=&quot;false&quot; /&gt;&lt;/ref&gt;&lt;/qref&gt;&lt;/c&gt;&lt;/r&gt;&lt;r&gt;&lt;c&gt;&lt;qref isMod=&quot;false&quot; isInUnderL=&quot;false&quot;&gt;&lt;ref&gt;&lt;vc vcType=&quot;D&quot;&gt;&lt;clCxt consider=&quot;L&quot; /&gt;&lt;/vc&gt;&lt;key typeID=&quot;AllInOne&quot; oid=&quot;10d718720f62387aa33a1644f747e259&quot;&gt;&lt;elem&gt;TejasDemo03_Sender&lt;/elem&gt;&lt;elem&gt;Sender&lt;/elem&gt;&lt;elem&gt;http://test.com/tejas03&lt;/elem&gt;&lt;elem&gt;Outb_Sync&lt;/elem&gt;&lt;elem /&gt;&lt;elem /&gt;&lt;/key&gt;&lt;vspec type=&quot;4&quot; id=&quot;d213b4d45d0a11eea45600000013dc2e&quot; deleted=&quot;false&quot; /&gt;&lt;/ref&gt;&lt;/qref&gt;&lt;/c&gt;&lt;/r&gt;&lt;r&gt;&lt;c&gt;&lt;qref isMod=&quot;false&quot; isInUnderL=&quot;false&quot;&gt;&lt;ref&gt;&lt;vc vcType=&quot;D&quot;&gt;&lt;clCxt consider=&quot;L&quot; /&gt;&lt;/vc&gt;&lt;key typeID=&quot;AllInOne&quot; oid=&quot;11eb16ec58bd36bca62909acf568f1e9&quot;&gt;&lt;elem /&gt;&lt;elem&gt;SENDER&lt;/elem&gt;&lt;elem&gt;http://craveinfotech.com/new_test_d/001&lt;/elem&gt;&lt;elem&gt;NEW_TEST_D_Add_outb_Sync&lt;/elem&gt;&lt;elem&gt;Calculator&lt;/elem&gt;&lt;elem&gt;WeBsErViCe&lt;/elem&gt;&lt;/key&gt;&lt;vspec type=&quot;4&quot; id=&quot;2c57c5d9cbfc11eeb04100000013dc2e&quot; deleted=&quot;false&quot; /&gt;&lt;/ref&gt;&lt;/qref&gt;&lt;/c&gt;&lt;/r&gt;&lt;r&gt;&lt;c&gt;&lt;qref isMod=&quot;false&quot; isInUnderL=&quot;false&quot;&gt;&lt;ref&gt;&lt;vc vcType=&quot;D&quot;&gt;&lt;clCxt consider=&quot;L&quot; /&gt;&lt;/vc&gt;&lt;key typeID=&quot;AllInOne&quot; oid=&quot;12f08cebcfcf381585ecc9e97ce2d323&quot;&gt;&lt;elem&gt;Training01_Sender&lt;/elem&gt;&lt;elem&gt;Sender&lt;/elem&gt;&lt;elem&gt;http://test.com/training01&lt;/elem&gt;&lt;elem&gt;OutboundAsync&lt;/elem&gt;&lt;elem /&gt;&lt;elem /&gt;&lt;/key&gt;&lt;vspec type=&quot;4&quot; id=&quot;aa2b011550db11ee827500000013dc2e&quot; deleted=&quot;false&quot; /&gt;&lt;/ref&gt;&lt;/qref&gt;&lt;/c&gt;&lt;/r&gt;&lt;r&gt;&lt;c&gt;&lt;qref isMod=&quot;false&quot; isInUnderL=&quot;false&quot;&gt;&lt;ref&gt;&lt;vc vcType=&quot;D&quot;&gt;&lt;clCxt consider=&quot;L&quot; /&gt;&lt;/vc&gt;&lt;key typeID=&quot;AllInOne&quot; oid=&quot;16a7a93b47313d5c9ba0445ad432e4a5&quot;&gt;&lt;elem&gt;Tejas_Demo_JM&lt;/elem&gt;&lt;elem&gt;Sender&lt;/elem&gt;&lt;elem&gt;http://test.com/tejas_filetofile&lt;/elem&gt;&lt;elem&gt;SIOA_Src_JavaMapping&lt;/elem&gt;&lt;elem /&gt;&lt;elem /&gt;&lt;/key&gt;&lt;vspec type=&quot;4&quot; id=&quot;2e946088e2b011eecf0600000013dc2e&quot; deleted=&quot;false&quot; /&gt;&lt;/ref&gt;&lt;/qref&gt;&lt;/c&gt;&lt;/r&gt;&lt;r&gt;&lt;c&gt;&lt;qref isMod=&quot;false&quot; isInUnderL=&quot;false&quot;&gt;&lt;ref&gt;&lt;vc vcType=&quot;D&quot;&gt;&lt;clCxt consider=&quot;L&quot; /&gt;&lt;/vc&gt;&lt;key typeID=&quot;AllInOne&quot; oid=&quot;17dc6d6e7f1734d4bae2664cff61f4aa&quot;&gt;&lt;elem&gt;Proxy_P&lt;/elem&gt;&lt;elem&gt;Proxy_BC&lt;/elem&gt;&lt;elem&gt;http://picourse.com/proxyInterface02&lt;/elem&gt;&lt;elem&gt;SI_BooksSend&lt;/elem&gt;&lt;elem /&gt;&lt;elem /&gt;&lt;/key&gt;&lt;vspec type=&quot;4&quot; id=&quot;324d1fa60af911ef990c00000013dc2e&quot; deleted=&quot;false&quot; /&gt;&lt;/ref&gt;&lt;/qref&gt;&lt;/c&gt;&lt;/r&gt;&lt;r&gt;&lt;c&gt;&lt;qref isMod=&quot;false&quot; isInUnderL=&quot;false&quot;&gt;&lt;ref&gt;&lt;vc vcType=&quot;D&quot;&gt;&lt;clCxt consider=&quot;L&quot; /&gt;&lt;/vc&gt;&lt;key typeID=&quot;AllInOne&quot; oid=&quot;1b49a06119f53d7e9b566a092733d076&quot;&gt;&lt;elem&gt;Mayank01_Sender&lt;/elem&gt;&lt;elem&gt;Sender&lt;/elem&gt;&lt;elem&gt;http://test.com/mayank02&lt;/elem&gt;&lt;elem&gt;ADD_out_sync&lt;/elem&gt;&lt;elem /&gt;&lt;elem /&gt;&lt;/key&gt;&lt;vspec type=&quot;4&quot; id=&quot;c3071e5a5b7711eea9b500000013dc2e&quot; deleted=&quot;false&quot; /&gt;&lt;/ref&gt;&lt;/qref&gt;&lt;/c&gt;&lt;/r&gt;&lt;r&gt;&lt;c&gt;&lt;qref isMod=&quot;false&quot; isInUnderL=&quot;false&quot;&gt;&lt;ref&gt;&lt;vc vcType=&quot;D&quot;&gt;&lt;clCxt consider=&quot;L&quot; /&gt;&lt;/vc&gt;&lt;key typeID=&quot;AllInOne&quot; oid=&quot;1c8c429840433a73b88a4794883c8eb1&quot;&gt;&lt;elem&gt;Rutuja_Demo1_sender&lt;/elem&gt;&lt;elem&gt;sender&lt;/elem&gt;&lt;elem&gt;http://test.com/rutuja&lt;/elem&gt;&lt;elem&gt;outboundAsync&lt;/elem&gt;&lt;elem /&gt;&lt;elem /&gt;&lt;/key&gt;&lt;vspec type=&quot;4&quot; id=&quot;996e408052bd11eec50f00000013dc2e&quot; deleted=&quot;false&quot; /&gt;&lt;/ref&gt;&lt;/qref&gt;&lt;/c&gt;&lt;/r&gt;&lt;r&gt;&lt;c&gt;&lt;qref isMod=&quot;false&quot; isInUnderL=&quot;false&quot;&gt;&lt;ref&gt;&lt;vc vcType=&quot;D&quot;&gt;&lt;clCxt consider=&quot;L&quot; /&gt;&lt;/vc&gt;&lt;key typeID=&quot;AllInOne&quot; oid=&quot;1c95076cd8683d0abd138a7c75c60581&quot;&gt;&lt;elem&gt;TejasDemo04&lt;/elem&gt;&lt;elem&gt;soapSender&lt;/elem&gt;&lt;elem&gt;http://test.com/tejas_F2F&lt;/elem&gt;&lt;elem&gt;SIOA_Src_JavaMapping&lt;/elem&gt;&lt;elem /&gt;&lt;elem /&gt;&lt;/key&gt;&lt;vspec type=&quot;4&quot; id=&quot;2e76133ce46d11ee881b00000013dc2e&quot; deleted=&quot;false&quot; /&gt;&lt;/ref&gt;&lt;/qref&gt;&lt;/c&gt;&lt;/r&gt;&lt;r&gt;&lt;c&gt;&lt;qref isMod=&quot;false&quot; isInUnderL=&quot;false&quot;&gt;&lt;ref&gt;&lt;vc vcType=&quot;D&quot;&gt;&lt;clCxt consider=&quot;L&quot; /&gt;&lt;/vc&gt;&lt;key typeID=&quot;AllInOne&quot; oid=&quot;1efc307f437e386f82818c4b5493593b&quot;&gt;&lt;elem /&gt;&lt;elem&gt;SENDER&lt;/elem&gt;&lt;elem&gt;http://craveinfotech.com/product_test/001&lt;/elem&gt;&lt;elem&gt;Product_Test_001_Add_Outb_Sync&lt;/elem&gt;&lt;elem&gt;Calculator&lt;/elem&gt;&lt;elem&gt;Webservicee&lt;/elem&gt;&lt;/key&gt;&lt;vspec type=&quot;4&quot; id=&quot;43c2cbe8ca5711eebfb500000013dc2e&quot; deleted=&quot;false&quot; /&gt;&lt;/ref&gt;&lt;/qref&gt;&lt;/c&gt;&lt;/r&gt;&lt;r&gt;&lt;c&gt;&lt;qref isMod=&quot;false&quot; isInUnderL=&quot;false&quot;&gt;&lt;ref&gt;&lt;vc vcType=&quot;D&quot;&gt;&lt;clCxt consider=&quot;L&quot; /&gt;&lt;/vc&gt;&lt;key typeID=&quot;AllInOne&quot; oid=&quot;1f74783b0cb139aa805b82ed2d299f57&quot;&gt;&lt;elem&gt;Sahil_Sender&lt;/elem&gt;&lt;elem&gt;Sender&lt;/elem&gt;&lt;elem&gt;http://test.com/sahil_khanke&lt;/elem&gt;&lt;elem&gt;OutboundAsync&lt;/elem&gt;&lt;elem /&gt;&lt;elem /&gt;&lt;/key&gt;&lt;vspec type=&quot;4&quot; id=&quot;65480d026df511f0b0c600000013dc2e&quot; deleted=&quot;false&quot; /&gt;&lt;/ref&gt;&lt;/qref&gt;&lt;/c&gt;&lt;/r&gt;&lt;r&gt;&lt;c&gt;&lt;qref isMod=&quot;false&quot; isInUnderL=&quot;false&quot;&gt;&lt;ref&gt;&lt;vc vcType=&quot;D&quot;&gt;&lt;clCxt consider=&quot;L&quot; /&gt;&lt;/vc&gt;&lt;key typeID=&quot;AllInOne&quot; oid=&quot;2207a05fc2733f2f9f54f66379fdddeb&quot;&gt;&lt;elem&gt;PY_POCTRAINING_F2F_SOURCE&lt;/elem&gt;&lt;elem&gt;BS_POCTRAINING_F2F_SOURCE&lt;/elem&gt;&lt;elem&gt;http://craveinfotech.com/interfacedemo/file2file&lt;/elem&gt;&lt;elem&gt;SI_OUT_F2F_CUST_PO_CREATE&lt;/elem&gt;&lt;elem /&gt;&lt;elem /&gt;&lt;/key&gt;&lt;vspec type=&quot;4&quot; id=&quot;35ed77d1c3e611ee825200000013dc2e&quot; deleted=&quot;false&quot; /&gt;&lt;/ref&gt;&lt;/qref&gt;&lt;/c&gt;&lt;/r&gt;&lt;r&gt;&lt;c&gt;&lt;qref isMod=&quot;false&quot; isInUnderL=&quot;false&quot;&gt;&lt;ref&gt;&lt;vc vcType=&quot;D&quot;&gt;&lt;clCxt consider=&quot;L&quot; /&gt;&lt;/vc&gt;&lt;key typeID=&quot;AllInOne&quot; oid=&quot;24efa5e4579c3a31a159cb5e85b47059&quot;&gt;&lt;elem /&gt;&lt;elem&gt;SENDER&lt;/elem&gt;&lt;elem&gt;http://craveinfotech.com/poc/019&lt;/elem&gt;&lt;elem&gt;ExchangeRates_Outb_Sync&lt;/elem&gt;&lt;elem /&gt;&lt;elem /&gt;&lt;/key&gt;&lt;vspec type=&quot;4&quot; id=&quot;c39a427a217611eeafad00000013dc2e&quot; deleted=&quot;false&quot; /&gt;&lt;/ref&gt;&lt;/qref&gt;&lt;/c&gt;&lt;/r&gt;&lt;r&gt;&lt;c&gt;&lt;qref isMod=&quot;false&quot; isInUnderL=&quot;false&quot;&gt;&lt;ref&gt;&lt;vc vcType=&quot;D&quot;&gt;&lt;clCxt consider=&quot;L&quot; /&gt;&lt;/vc&gt;&lt;key typeID=&quot;AllInOne&quot; oid=&quot;26b0c328d1a13765b7dd321c8205ee8f&quot;&gt;&lt;elem /&gt;&lt;elem&gt;SENDER&lt;/elem&gt;&lt;elem&gt;http://craveinfotech.com/poc/016&lt;/elem&gt;&lt;elem&gt;POC_016_Outb_Async&lt;/elem&gt;&lt;elem /&gt;&lt;elem /&gt;&lt;/key&gt;&lt;vspec type=&quot;4&quot; id=&quot;8e13e7f003f011ee845500000013dc2e&quot; deleted=&quot;false&quot; /&gt;&lt;/ref&gt;&lt;/qref&gt;&lt;/c&gt;&lt;/r&gt;&lt;r&gt;&lt;c&gt;&lt;qref isMod=&quot;false&quot; isInUnderL=&quot;false&quot;&gt;&lt;ref&gt;&lt;vc vcType=&quot;D&quot;&gt;&lt;clCxt consider=&quot;L&quot; /&gt;&lt;/vc&gt;&lt;key typeID=&quot;AllInOne&quot; oid=&quot;277463b9cd9c39d3be3a0472715695c4&quot;&gt;&lt;elem&gt;PO_Abhi_Sender&lt;/elem&gt;&lt;elem&gt;Sender&lt;/elem&gt;&lt;elem&gt;http://test.com/abhi&lt;/elem&gt;&lt;elem&gt;OutboundAsync&lt;/elem&gt;&lt;elem /&gt;&lt;elem /&gt;&lt;/key&gt;&lt;vspec type=&quot;4&quot; id=&quot;f0d9c0466df511f0cd5f00000013dc2e&quot; deleted=&quot;false&quot; /&gt;&lt;/ref&gt;&lt;/qref&gt;&lt;/c&gt;&lt;/r&gt;&lt;r&gt;&lt;c&gt;&lt;qref isMod=&quot;false&quot; isInUnderL=&quot;false&quot;&gt;&lt;ref&gt;&lt;vc vcType=&quot;D&quot;&gt;&lt;clCxt consider=&quot;L&quot; /&gt;&lt;/vc&gt;&lt;key typeID=&quot;AllInOne&quot; oid=&quot;27e88b5f065c3e20b76ebf8efb722c2a&quot;&gt;&lt;elem&gt;Tanmay_Training_Sender&lt;/elem&gt;&lt;elem&gt;Sender&lt;/elem&gt;&lt;elem&gt;http://test.com/tanmay_training&lt;/elem&gt;&lt;elem&gt;OutboundAsync&lt;/elem&gt;&lt;elem /&gt;&lt;elem /&gt;&lt;/key&gt;&lt;vspec type=&quot;4&quot; id=&quot;447416216df911f098c300000013dc2e&quot; deleted=&quot;false&quot; /&gt;&lt;/ref&gt;&lt;/qref&gt;&lt;/c&gt;&lt;/r&gt;&lt;r&gt;&lt;c&gt;&lt;qref isMod=&quot;false&quot; isInUnderL=&quot;false&quot;&gt;&lt;ref&gt;&lt;vc vcType=&quot;D&quot;&gt;&lt;clCxt consider=&quot;L&quot; /&gt;&lt;/vc&gt;&lt;key typeID=&quot;AllInOne&quot; oid=&quot;2ffbeab3629b342abbf43434a368256c&quot;&gt;&lt;elem /&gt;&lt;elem&gt;SENDER&lt;/elem&gt;&lt;elem&gt;dummy.namespace.com&lt;/elem&gt;&lt;elem&gt;SenderOutbAsyncDummy&lt;/elem&gt;&lt;elem /&gt;&lt;elem /&gt;&lt;/key&gt;&lt;vspec type=&quot;4&quot; id=&quot;0b8bc5ef96ba11efb8f000000013dc2e&quot; deleted=&quot;false&quot; /&gt;&lt;/ref&gt;&lt;/qref&gt;&lt;/c&gt;&lt;/r&gt;&lt;r&gt;&lt;c&gt;&lt;qref isMod=&quot;false&quot; isInUnderL=&quot;false&quot;&gt;&lt;ref&gt;&lt;vc vcType=&quot;D&quot;&gt;&lt;clCxt consider=&quot;L&quot; /&gt;&lt;/vc&gt;&lt;key typeID=&quot;AllInOne&quot; oid=&quot;314c7b7560b13e539574e5c8423073bb&quot;&gt;&lt;elem /&gt;&lt;elem&gt;BSCLNT300&lt;/elem&gt;&lt;elem&gt;urn:sap-com:document:sap:idoc:messages&lt;/elem&gt;&lt;elem&gt;ORDERS.ORDERS05&lt;/elem&gt;&lt;elem /&gt;&lt;elem /&gt;&lt;/key&gt;&lt;vspec type=&quot;4&quot; id=&quot;d549296b039211ee8d8e00000013dc2e&quot; deleted=&quot;false&quot; /&gt;&lt;/ref&gt;&lt;/qref&gt;&lt;/c&gt;&lt;/r&gt;&lt;r&gt;&lt;c&gt;&lt;qref isMod=&quot;false&quot; isInUnderL=&quot;false&quot;&gt;&lt;ref&gt;&lt;vc vcType=&quot;D&quot;&gt;&lt;clCxt consider=&quot;L&quot; /&gt;&lt;/vc&gt;&lt;key typeID=&quot;AllInOne&quot; oid=&quot;3691c25d12c736a7985ae61340d114f1&quot;&gt;&lt;elem&gt;Training_01_Vaishnavi&lt;/elem&gt;&lt;elem&gt;Sender&lt;/elem&gt;&lt;elem&gt;http://test.com/vaishnavi_po_training_01&lt;/elem&gt;&lt;elem&gt;OutboundAsync&lt;/elem&gt;&lt;elem /&gt;&lt;elem /&gt;&lt;/key&gt;&lt;vspec type=&quot;4&quot; id=&quot;b66d96a66d3311f0ccad00000013dc2e&quot; deleted=&quot;false&quot; /&gt;&lt;/ref&gt;&lt;/qref&gt;&lt;/c&gt;&lt;/r&gt;&lt;r&gt;&lt;c&gt;&lt;qref isMod=&quot;false&quot; isInUnderL=&quot;false&quot;&gt;&lt;ref&gt;&lt;vc vcType=&quot;D&quot;&gt;&lt;clCxt consider=&quot;L&quot; /&gt;&lt;/vc&gt;&lt;key typeID=&quot;AllInOne&quot; oid=&quot;3cd076f13a6733dc87527251f909e7ac&quot;&gt;&lt;elem&gt;Rutuja_Demo1_sender&lt;/elem&gt;&lt;elem&gt;sender&lt;/elem&gt;&lt;elem&gt;http://test.com/rutuja02&lt;/elem&gt;&lt;elem&gt;Add_outb_Sync&lt;/elem&gt;&lt;elem /&gt;&lt;elem /&gt;&lt;/key&gt;&lt;vspec type=&quot;4&quot; id=&quot;05fec8e7586011eebeb800000013dc2e&quot; deleted=&quot;false&quot; /&gt;&lt;/ref&gt;&lt;/qref&gt;&lt;/c&gt;&lt;/r&gt;&lt;r&gt;&lt;c&gt;&lt;qref isMod=&quot;false&quot; isInUnderL=&quot;false&quot;&gt;&lt;ref&gt;&lt;vc vcType=&quot;D&quot;&gt;&lt;clCxt consider=&quot;L&quot; /&gt;&lt;/vc&gt;&lt;key typeID=&quot;AllInOne&quot; oid=&quot;43fd0f7ad8ef31ca8bccbc23c98d83b3&quot;&gt;&lt;elem&gt;VaibhavSender&lt;/elem&gt;&lt;elem&gt;Sender&lt;/elem&gt;&lt;elem&gt;http://test.com/vaibhav02&lt;/elem&gt;&lt;elem&gt;Add_Outb_Sync&lt;/elem&gt;&lt;elem /&gt;&lt;elem /&gt;&lt;/key&gt;&lt;vspec type=&quot;4&quot; id=&quot;8a95a4e9585011eec5ca00000013dc2e&quot; deleted=&quot;false&quot; /&gt;&lt;/ref&gt;&lt;/qref&gt;&lt;/c&gt;&lt;/r&gt;&lt;r&gt;&lt;c&gt;&lt;qref isMod=&quot;false&quot; isInUnderL=&quot;false&quot;&gt;&lt;ref&gt;&lt;vc vcType=&quot;D&quot;&gt;&lt;clCxt consider=&quot;L&quot; /&gt;&lt;/vc&gt;&lt;key typeID=&quot;AllInOne&quot; oid=&quot;47fce2cb9a5a3bdab6071a876a7c913f&quot;&gt;&lt;elem /&gt;&lt;elem&gt;SENDER&lt;/elem&gt;&lt;elem&gt;http://craveinfotech.com/poc/008&lt;/elem&gt;&lt;elem&gt;POC_008_Outb_Async&lt;/elem&gt;&lt;elem /&gt;&lt;elem /&gt;&lt;/key&gt;&lt;vspec type=&quot;4&quot; id=&quot;65bda6c6016511eec22e00000013dc2e&quot; deleted=&quot;false&quot; /&gt;&lt;/ref&gt;&lt;/qref&gt;&lt;/c&gt;&lt;/r&gt;&lt;r&gt;&lt;c&gt;&lt;qref isMod=&quot;false&quot; isInUnderL=&quot;false&quot;&gt;&lt;ref&gt;&lt;vc vcType=&quot;D&quot;&gt;&lt;clCxt consider=&quot;L&quot; /&gt;&lt;/vc&gt;&lt;key typeID=&quot;AllInOne&quot; oid=&quot;4e25da2ee8073b9a87571c90a0d4a4db&quot;&gt;&lt;elem /&gt;&lt;elem&gt;SENDER&lt;/elem&gt;&lt;elem&gt;http://craveinfotech.com/poc/009&lt;/elem&gt;&lt;elem&gt;POC_009_Select_Outb_Sync&lt;/elem&gt;&lt;elem /&gt;&lt;elem /&gt;&lt;/key&gt;&lt;vspec type=&quot;4&quot; id=&quot;3c873479587a11eea68700000013dc2e&quot; deleted=&quot;false&quot; /&gt;&lt;/ref&gt;&lt;/qref&gt;&lt;/c&gt;&lt;/r&gt;&lt;r&gt;&lt;c&gt;&lt;qref isMod=&quot;false&quot; isInUnderL=&quot;false&quot;&gt;&lt;ref&gt;&lt;vc vcType=&quot;D&quot;&gt;&lt;clCxt consider=&quot;L&quot; /&gt;&lt;/vc&gt;&lt;key typeID=&quot;AllInOne&quot; oid=&quot;4e84260565993dc493cb92cac793f578&quot;&gt;&lt;elem /&gt;&lt;elem&gt;BSCLNT300&lt;/elem&gt;&lt;elem&gt;http://craveinfotech.com/test_develop/001&lt;/elem&gt;&lt;elem&gt;OutBoundAsync&lt;/elem&gt;&lt;elem /&gt;&lt;elem /&gt;&lt;/key&gt;&lt;vspec type=&quot;4&quot; id=&quot;f45ccaca436a11ef964f00000013dc2e&quot; deleted=&quot;false&quot; /&gt;&lt;/ref&gt;&lt;/qref&gt;&lt;/c&gt;&lt;/r&gt;&lt;r&gt;&lt;c&gt;&lt;qref isMod=&quot;false&quot; isInUnderL=&quot;false&quot;&gt;&lt;ref&gt;&lt;vc vcType=&quot;D&quot;&gt;&lt;clCxt consider=&quot;L&quot; /&gt;&lt;/vc&gt;&lt;key typeID=&quot;AllInOne&quot; oid=&quot;507db6fb1b4b36968998a1f7b754828b&quot;&gt;&lt;elem&gt;Taining01_Sender&lt;/elem&gt;&lt;elem&gt;sender&lt;/elem&gt;&lt;elem&gt;http://test.com/harsh&lt;/elem&gt;&lt;elem&gt;OutboundAsync&lt;/elem&gt;&lt;elem /&gt;&lt;elem /&gt;&lt;/key&gt;&lt;vspec type=&quot;4&quot; id=&quot;4cb3a09f6d3211f08f1e00000013dc2e&quot; deleted=&quot;false&quot; /&gt;&lt;/ref&gt;&lt;/qref&gt;&lt;/c&gt;&lt;/r&gt;&lt;r&gt;&lt;c&gt;&lt;qref isMod=&quot;false&quot; isInUnderL=&quot;false&quot;&gt;&lt;ref&gt;&lt;vc vcType=&quot;D&quot;&gt;&lt;clCxt consider=&quot;L&quot; /&gt;&lt;/vc&gt;&lt;key typeID=&quot;AllInOne&quot; oid=&quot;5392f9dc2006394c9806d10ed8d0af7f&quot;&gt;&lt;elem /&gt;&lt;elem&gt;BSCLNT300&lt;/elem&gt;&lt;elem&gt;http://craveinfotech.com/poc/013&lt;/elem&gt;&lt;elem&gt;POC_013_Proxy_Outb_Async&lt;/elem&gt;&lt;elem /&gt;&lt;elem /&gt;&lt;/key&gt;&lt;vspec type=&quot;4&quot; id=&quot;066c6c61019a11eeba5900000013dc2e&quot; deleted=&quot;false&quot; /&gt;&lt;/ref&gt;&lt;/qref&gt;&lt;/c&gt;&lt;/r&gt;&lt;r&gt;&lt;c&gt;&lt;qref isMod=&quot;false&quot; isInUnderL=&quot;false&quot;&gt;&lt;ref&gt;&lt;vc vcType=&quot;D&quot;&gt;&lt;clCxt consider=&quot;L&quot; /&gt;&lt;/vc&gt;&lt;key typeID=&quot;AllInOne&quot; oid=&quot;578c34ed1f7736b5993b0462fdf762a7&quot;&gt;&lt;elem&gt;TejasDemo04&lt;/elem&gt;&lt;elem&gt;Sender&lt;/elem&gt;&lt;elem&gt;http://test.com/tejas03&lt;/elem&gt;&lt;elem&gt;Outb_Sync&lt;/elem&gt;&lt;elem /&gt;&lt;elem /&gt;&lt;/key&gt;&lt;vspec type=&quot;4&quot; id=&quot;26a3e11262a011eeaf8300000013dc2e&quot; deleted=&quot;false&quot; /&gt;&lt;/ref&gt;&lt;/qref&gt;&lt;/c&gt;&lt;/r&gt;&lt;r&gt;&lt;c&gt;&lt;qref isMod=&quot;false&quot; isInUnderL=&quot;false&quot;&gt;&lt;ref&gt;&lt;vc vcType=&quot;D&quot;&gt;&lt;clCxt consider=&quot;L&quot; /&gt;&lt;/vc&gt;&lt;key typeID=&quot;AllInOne&quot; oid=&quot;592bca8f5fa7371683ec0de7c37d5900&quot;&gt;&lt;elem&gt;Calculators&lt;/elem&gt;&lt;elem&gt;Sender&lt;/elem&gt;&lt;elem&gt;http://test.com/rutuja02&lt;/elem&gt;&lt;elem&gt;Add_outb_Sync&lt;/elem&gt;&lt;elem /&gt;&lt;elem /&gt;&lt;/key&gt;&lt;vspec type=&quot;4&quot; id=&quot;8cc5e1a3643311eea6d600000013dc2e&quot; deleted=&quot;false&quot; /&gt;&lt;/ref&gt;&lt;/qref&gt;&lt;/c&gt;&lt;/r&gt;&lt;r&gt;&lt;c&gt;&lt;qref isMod=&quot;false&quot; isInUnderL=&quot;false&quot;&gt;&lt;ref&gt;&lt;vc vcType=&quot;D&quot;&gt;&lt;clCxt consider=&quot;L&quot; /&gt;&lt;/vc&gt;&lt;key typeID=&quot;AllInOne&quot; oid=&quot;595eaefe3fbc3f928e0c2d118f7b99a6&quot;&gt;&lt;elem /&gt;&lt;elem&gt;SENDER&lt;/elem&gt;&lt;elem&gt;http://craveinfotech.com/poc/009&lt;/elem&gt;&lt;elem&gt;POC_009_Insert_Outb_Sync&lt;/elem&gt;&lt;elem /&gt;&lt;elem /&gt;&lt;/key&gt;&lt;vspec type=&quot;4&quot; id=&quot;024778d8017811ee917500000013dc2e&quot; deleted=&quot;false&quot; /&gt;&lt;/ref&gt;&lt;/qref&gt;&lt;/c&gt;&lt;/r&gt;&lt;r&gt;&lt;c&gt;&lt;qref isMod=&quot;false&quot; isInUnderL=&quot;false&quot;&gt;&lt;ref&gt;&lt;vc vcType=&quot;D&quot;&gt;&lt;clCxt consider=&quot;L&quot; /&gt;&lt;/vc&gt;&lt;key typeID=&quot;AllInOne&quot; oid=&quot;5a46082a432034d88f4070213b5e1306&quot;&gt;&lt;elem&gt;LCSVDEMO_SENDER&lt;/elem&gt;&lt;elem&gt;LCSVDEMO_CONCAT&lt;/elem&gt;&lt;elem&gt;http://test.com/lcsvdemo&lt;/elem&gt;&lt;elem&gt;outbsync&lt;/elem&gt;&lt;elem /&gt;&lt;elem /&gt;&lt;/key&gt;&lt;vspec type=&quot;4&quot; id=&quot;902801c4e4eb11eeca4200000013dc2e&quot; deleted=&quot;false&quot; /&gt;&lt;/ref&gt;&lt;/qref&gt;&lt;/c&gt;&lt;/r&gt;&lt;r&gt;&lt;c&gt;&lt;qref isMod=&quot;false&quot; isInUnderL=&quot;false&quot;&gt;&lt;ref&gt;&lt;vc vcType=&quot;D&quot;&gt;&lt;clCxt consider=&quot;L&quot; /&gt;&lt;/vc&gt;&lt;key typeID=&quot;AllInOne&quot; oid=&quot;5ab1f5e9599a33848be1b6bc2c0ce94b&quot;&gt;&lt;elem&gt;TejasDemo01_Sender&lt;/elem&gt;&lt;elem&gt;Sender&lt;/elem&gt;&lt;elem&gt;http://test.com/tejas&lt;/elem&gt;&lt;elem&gt;OutboundAsync&lt;/elem&gt;&lt;elem /&gt;&lt;elem /&gt;&lt;/key&gt;&lt;vspec type=&quot;4&quot; id=&quot;8c70605e518f11eeb2af00000013dc2e&quot; deleted=&quot;false&quot; /&gt;&lt;/ref&gt;&lt;/qref&gt;&lt;/c&gt;&lt;/r&gt;&lt;r&gt;&lt;c&gt;&lt;qref isMod=&quot;false&quot; isInUnderL=&quot;false&quot;&gt;&lt;ref&gt;&lt;vc vcType=&quot;D&quot;&gt;&lt;clCxt consider=&quot;L&quot; /&gt;&lt;/vc&gt;&lt;key typeID=&quot;AllInOne&quot; oid=&quot;5e2c3663eb973b47ba1e120c5dd861c8&quot;&gt;&lt;elem&gt;Tejas_Demo_JM&lt;/elem&gt;&lt;elem&gt;Sender&lt;/elem&gt;&lt;elem&gt;http://test.com/javamapping_demo&lt;/elem&gt;&lt;elem&gt;SIOA_Src_JavaMapping&lt;/elem&gt;&lt;elem /&gt;&lt;elem /&gt;&lt;/key&gt;&lt;vspec type=&quot;4&quot; id=&quot;7b2ad8b2b12911ee806100000013dc2e&quot; deleted=&quot;false&quot; /&gt;&lt;/ref&gt;&lt;/qref&gt;&lt;/c&gt;&lt;/r&gt;&lt;r&gt;&lt;c&gt;&lt;qref isMod=&quot;false&quot; isInUnderL=&quot;false&quot;&gt;&lt;ref&gt;&lt;vc vcType=&quot;D&quot;&gt;&lt;clCxt consider=&quot;L&quot; /&gt;&lt;/vc&gt;&lt;key typeID=&quot;AllInOne&quot; oid=&quot;5e443a987e5d302e867ab77574be136f&quot;&gt;&lt;elem /&gt;&lt;elem&gt;SENDER&lt;/elem&gt;&lt;elem&gt;http://craveinfotech.com/poc/011&lt;/elem&gt;&lt;elem&gt;POC_011_Outb_Async&lt;/elem&gt;&lt;elem /&gt;&lt;elem /&gt;&lt;/key&gt;&lt;vspec type=&quot;4&quot; id=&quot;8a72110c018c11ee808500000013dc2e&quot; deleted=&quot;false&quot; /&gt;&lt;/ref&gt;&lt;/qref&gt;&lt;/c&gt;&lt;/r&gt;&lt;r&gt;&lt;c&gt;&lt;qref isMod=&quot;false&quot; isInUnderL=&quot;false&quot;&gt;&lt;ref&gt;&lt;vc vcType=&quot;D&quot;&gt;&lt;clCxt consider=&quot;L&quot; /&gt;&lt;/vc&gt;&lt;key typeID=&quot;AllInOne&quot; oid=&quot;66f19468c64432a19ac34725639bdea4&quot;&gt;&lt;elem&gt;TejasDemo04&lt;/elem&gt;&lt;elem&gt;SENDER&lt;/elem&gt;&lt;elem&gt;http://test.com/tejas04&lt;/elem&gt;&lt;elem&gt;Tejas_JDBC_Outb_Async&lt;/elem&gt;&lt;elem /&gt;&lt;elem /&gt;&lt;/key&gt;&lt;vspec type=&quot;4&quot; id=&quot;1f97d797771311ee859e00000013dc2e&quot; deleted=&quot;false&quot; /&gt;&lt;/ref&gt;&lt;/qref&gt;&lt;/c&gt;&lt;/r&gt;&lt;r&gt;&lt;c&gt;&lt;qref isMod=&quot;false&quot; isInUnderL=&quot;false&quot;&gt;&lt;ref&gt;&lt;vc vcType=&quot;D&quot;&gt;&lt;clCxt consider=&quot;L&quot; /&gt;&lt;/vc&gt;&lt;key typeID=&quot;AllInOne&quot; oid=&quot;67ec4cdd6701377e8d1cfdcac7e97555&quot;&gt;&lt;elem /&gt;&lt;elem&gt;SENDER&lt;/elem&gt;&lt;elem&gt;http://craveinfotech.com/poc/005&lt;/elem&gt;&lt;elem&gt;POC_005_Outb_Sync&lt;/elem&gt;&lt;elem /&gt;&lt;elem /&gt;&lt;/key&gt;&lt;vspec type=&quot;4&quot; id=&quot;d558631301ac11eecb5700000013dc2e&quot; deleted=&quot;false&quot; /&gt;&lt;/ref&gt;&lt;/qref&gt;&lt;/c&gt;&lt;/r&gt;&lt;r&gt;&lt;c&gt;&lt;qref isMod=&quot;false&quot; isInUnderL=&quot;false&quot;&gt;&lt;ref&gt;&lt;vc vcType=&quot;D&quot;&gt;&lt;clCxt consider=&quot;L&quot; /&gt;&lt;/vc&gt;&lt;key typeID=&quot;AllInOne&quot; oid=&quot;735ee9d3c37b3bf79daa6092bf80916c&quot;&gt;&lt;elem&gt;Deepak_Sender&lt;/elem&gt;&lt;elem&gt;Sender&lt;/elem&gt;&lt;elem&gt;http://test.com/deepak&lt;/elem&gt;&lt;elem&gt;OutboundAsync&lt;/elem&gt;&lt;elem /&gt;&lt;elem /&gt;&lt;/key&gt;&lt;vspec type=&quot;4&quot; id=&quot;dae1a8996b7411f0b2ff00000013dc2e&quot; deleted=&quot;false&quot; /&gt;&lt;/ref&gt;&lt;/qref&gt;&lt;/c&gt;&lt;/r&gt;&lt;r&gt;&lt;c&gt;&lt;qref isMod=&quot;false&quot; isInUnderL=&quot;false&quot;&gt;&lt;ref&gt;&lt;vc vcType=&quot;D&quot;&gt;&lt;clCxt consider=&quot;L&quot; /&gt;&lt;/vc&gt;&lt;key typeID=&quot;AllInOne&quot; oid=&quot;736b1f5f545435eca545fe77d8c1e32d&quot;&gt;&lt;elem /&gt;&lt;elem&gt;SENDER&lt;/elem&gt;&lt;elem&gt;http://craveinfotech.com/poc/003&lt;/elem&gt;&lt;elem&gt;POC_003_Outb_Sync&lt;/elem&gt;&lt;elem /&gt;&lt;elem /&gt;&lt;/key&gt;&lt;vspec type=&quot;4&quot; id=&quot;c90619dc018711eea88d00000013dc2e&quot; deleted=&quot;false&quot; /&gt;&lt;/ref&gt;&lt;/qref&gt;&lt;/c&gt;&lt;/r&gt;&lt;r&gt;&lt;c&gt;&lt;qref isMod=&quot;false&quot; isInUnderL=&quot;false&quot;&gt;&lt;ref&gt;&lt;vc vcType=&quot;D&quot;&gt;&lt;clCxt consider=&quot;L&quot; /&gt;&lt;/vc&gt;&lt;key typeID=&quot;AllInOne&quot; oid=&quot;785a4545d951324fac6a791dc6fe6362&quot;&gt;&lt;elem /&gt;&lt;elem&gt;SENDER&lt;/elem&gt;&lt;elem&gt;http://craveinfotech.com/poc/015&lt;/elem&gt;&lt;elem&gt;POC_015_Outb_Async&lt;/elem&gt;&lt;elem /&gt;&lt;elem /&gt;&lt;/key&gt;&lt;vspec type=&quot;4&quot; id=&quot;aa174a1b03dd11eeb5e400000013dc2e&quot; deleted=&quot;false&quot; /&gt;&lt;/ref&gt;&lt;/qref&gt;&lt;/c&gt;&lt;/r&gt;&lt;r&gt;&lt;c&gt;&lt;qref isMod=&quot;false&quot; isInUnderL=&quot;false&quot;&gt;&lt;ref&gt;&lt;vc vcType=&quot;D&quot;&gt;&lt;clCxt consider=&quot;L&quot; /&gt;&lt;/vc&gt;&lt;key typeID=&quot;AllInOne&quot; oid=&quot;7a6f106439fd316a92313abae8e2f982&quot;&gt;&lt;elem&gt;Mayank01_Sender&lt;/elem&gt;&lt;elem&gt;Sender&lt;/elem&gt;&lt;elem&gt;http://test.com/mayank&lt;/elem&gt;&lt;elem&gt;outboundAsync&lt;/elem&gt;&lt;elem /&gt;&lt;elem /&gt;&lt;/key&gt;&lt;vspec type=&quot;4&quot; id=&quot;116b9e9d520311ee8afc00000013dc2e&quot; deleted=&quot;false&quot; /&gt;&lt;/ref&gt;&lt;/qref&gt;&lt;/c&gt;&lt;/r&gt;&lt;r&gt;&lt;c&gt;&lt;qref isMod=&quot;false&quot; isInUnderL=&quot;false&quot;&gt;&lt;ref&gt;&lt;vc vcType=&quot;D&quot;&gt;&lt;clCxt consider=&quot;L&quot; /&gt;&lt;/vc&gt;&lt;key typeID=&quot;AllInOne&quot; oid=&quot;7cfd12b8ad8a318c8631b42436e84a59&quot;&gt;&lt;elem /&gt;&lt;elem&gt;SENDER&lt;/elem&gt;&lt;elem&gt;http://craveinfotech.com/new_test/001&lt;/elem&gt;&lt;elem&gt;NEW_TEST_001_Outb_Sync&lt;/elem&gt;&lt;elem /&gt;&lt;elem /&gt;&lt;/key&gt;&lt;vspec type=&quot;4&quot; id=&quot;93094b2ac03e11eea96000000013dc2e&quot; deleted=&quot;false&quot; /&gt;&lt;/ref&gt;&lt;/qref&gt;&lt;/c&gt;&lt;/r&gt;&lt;r&gt;&lt;c&gt;&lt;qref isMod=&quot;false&quot; isInUnderL=&quot;false&quot;&gt;&lt;ref&gt;&lt;vc vcType=&quot;D&quot;&gt;&lt;clCxt consider=&quot;L&quot; /&gt;&lt;/vc&gt;&lt;key typeID=&quot;AllInOne&quot; oid=&quot;7fc59990215f3dab983895032a3c36fc&quot;&gt;&lt;elem /&gt;&lt;elem&gt;BSCLNT300&lt;/elem&gt;&lt;elem&gt;http://craveinfotech.com/new_test/001&lt;/elem&gt;&lt;elem&gt;NEW_TEST_001_Outb_Sync&lt;/elem&gt;&lt;elem /&gt;&lt;elem /&gt;&lt;/key&gt;&lt;vspec type=&quot;4&quot; id=&quot;3be809c9429d11ef8b5100000013dc2e&quot; deleted=&quot;false&quot; /&gt;&lt;/ref&gt;&lt;/qref&gt;&lt;/c&gt;&lt;/r&gt;&lt;r&gt;&lt;c&gt;&lt;qref isMod=&quot;false&quot; isInUnderL=&quot;false&quot;&gt;&lt;ref&gt;&lt;vc vcType=&quot;D&quot;&gt;&lt;clCxt consider=&quot;L&quot; /&gt;&lt;/vc&gt;&lt;key typeID=&quot;AllInOne&quot; oid=&quot;890831c265123a8db8b831610943a675&quot;&gt;&lt;elem /&gt;&lt;elem&gt;ERP_ECC_RUTUJA_800_GLOBAL&lt;/elem&gt;&lt;elem&gt;http://crave.com/f2f/SupplierPayment&lt;/elem&gt;&lt;elem&gt;ST_OUT_ASYNC_F2&lt;/elem&gt;&lt;elem /&gt;&lt;elem /&gt;&lt;/key&gt;&lt;vspec type=&quot;4&quot; id=&quot;07650771e6b211eec04300000013dc2e&quot; deleted=&quot;false&quot; /&gt;&lt;/ref&gt;&lt;/qref&gt;&lt;/c&gt;&lt;/r&gt;&lt;r&gt;&lt;c&gt;&lt;qref isMod=&quot;false&quot; isInUnderL=&quot;false&quot;&gt;&lt;ref&gt;&lt;vc vcType=&quot;D&quot;&gt;&lt;clCxt consider=&quot;L&quot; /&gt;&lt;/vc&gt;&lt;key typeID=&quot;AllInOne&quot; oid=&quot;90c3b0193802386eac10e6d324343d2b&quot;&gt;&lt;elem /&gt;&lt;elem&gt;SENDER&lt;/elem&gt;&lt;elem&gt;http://craveinfotech.com/poc/018&lt;/elem&gt;&lt;elem&gt;POC_018_Outb_Async&lt;/elem&gt;&lt;elem /&gt;&lt;elem /&gt;&lt;/key&gt;&lt;vspec type=&quot;4&quot; id=&quot;c5e0f8ed053f11eeb8f300000013dc2e&quot; deleted=&quot;false&quot; /&gt;&lt;/ref&gt;&lt;/qref&gt;&lt;/c&gt;&lt;/r&gt;&lt;r&gt;&lt;c&gt;&lt;qref isMod=&quot;false&quot; isInUnderL=&quot;false&quot;&gt;&lt;ref&gt;&lt;vc vcType=&quot;D&quot;&gt;&lt;clCxt consider=&quot;L&quot; /&gt;&lt;/vc&gt;&lt;key typeID=&quot;AllInOne&quot; oid=&quot;9724605ce2b730d788a7b7e0a92ee7d2&quot;&gt;&lt;elem&gt;demo01_sender&lt;/elem&gt;&lt;elem&gt;Sender&lt;/elem&gt;&lt;elem&gt;http://test.com/demo01&lt;/elem&gt;&lt;elem&gt;demo01_Outb_Sync&lt;/elem&gt;&lt;elem /&gt;&lt;elem /&gt;&lt;/key&gt;&lt;vspec type=&quot;4&quot; id=&quot;9c9477d8aee311eec9f100000013dc2e&quot; deleted=&quot;false&quot; /&gt;&lt;/ref&gt;&lt;/qref&gt;&lt;/c&gt;&lt;/r&gt;&lt;r&gt;&lt;c&gt;&lt;qref isMod=&quot;false&quot; isInUnderL=&quot;false&quot;&gt;&lt;ref&gt;&lt;vc vcType=&quot;D&quot;&gt;&lt;clCxt consider=&quot;L&quot; /&gt;&lt;/vc&gt;&lt;key typeID=&quot;AllInOne&quot; oid=&quot;995d5e672238391882e027c59124f6e4&quot;&gt;&lt;elem /&gt;&lt;elem&gt;SENDER&lt;/elem&gt;&lt;elem&gt;http://craveinfotech.com/poc/002&lt;/elem&gt;&lt;elem&gt;POC_002_Outb_Sync&lt;/elem&gt;&lt;elem /&gt;&lt;elem /&gt;&lt;/key&gt;&lt;vspec type=&quot;4&quot; id=&quot;72e48f4f20e711eea95900000013dc2e&quot; deleted=&quot;false&quot; /&gt;&lt;/ref&gt;&lt;/qref&gt;&lt;/c&gt;&lt;/r&gt;&lt;r&gt;&lt;c&gt;&lt;qref isMod=&quot;false&quot; isInUnderL=&quot;false&quot;&gt;&lt;ref&gt;&lt;vc vcType=&quot;D&quot;&gt;&lt;clCxt consider=&quot;L&quot; /&gt;&lt;/vc&gt;&lt;key typeID=&quot;AllInOne&quot; oid=&quot;a20f1ba890cc3a2eb4a2407c56528d7a&quot;&gt;&lt;elem /&gt;&lt;elem&gt;SENDER&lt;/elem&gt;&lt;elem&gt;http://craveinfotech.com/poc/010&lt;/elem&gt;&lt;elem&gt;POC_010_SOAP_Outb_Sync&lt;/elem&gt;&lt;elem /&gt;&lt;elem /&gt;&lt;/key&gt;&lt;vspec type=&quot;4&quot; id=&quot;7e108cdf018011eeae0300000013dc2e&quot; deleted=&quot;false&quot; /&gt;&lt;/ref&gt;&lt;/qref&gt;&lt;/c&gt;&lt;/r&gt;&lt;r&gt;&lt;c&gt;&lt;qref isMod=&quot;false&quot; isInUnderL=&quot;false&quot;&gt;&lt;ref&gt;&lt;vc vcType=&quot;D&quot;&gt;&lt;clCxt consider=&quot;L&quot; /&gt;&lt;/vc&gt;&lt;key typeID=&quot;AllInOne&quot; oid=&quot;a554cd2139473a038d394a852ce7ff5b&quot;&gt;&lt;elem&gt;VaibhavSender&lt;/elem&gt;&lt;elem&gt;Sender&lt;/elem&gt;&lt;elem&gt;http://test.com/vaibhav&lt;/elem&gt;&lt;elem&gt;OutboundAsync&lt;/elem&gt;&lt;elem /&gt;&lt;elem /&gt;&lt;/key&gt;&lt;vspec type=&quot;4&quot; id=&quot;f6e650a6521d11eea74b00000013dc2e&quot; deleted=&quot;false&quot; /&gt;&lt;/ref&gt;&lt;/qref&gt;&lt;/c&gt;&lt;/r&gt;&lt;r&gt;&lt;c&gt;&lt;qref isMod=&quot;false&quot; isInUnderL=&quot;false&quot;&gt;&lt;ref&gt;&lt;vc vcType=&quot;D&quot;&gt;&lt;clCxt consider=&quot;L&quot; /&gt;&lt;/vc&gt;&lt;key typeID=&quot;AllInOne&quot; oid=&quot;aa1e730995ca390cbee79804107c94f1&quot;&gt;&lt;elem /&gt;&lt;elem&gt;SENDER&lt;/elem&gt;&lt;elem&gt;http://craveinfotech.com/poc/020&lt;/elem&gt;&lt;elem&gt;POC_020_Outb_Sync&lt;/elem&gt;&lt;elem /&gt;&lt;elem&gt;BSCLNT300&lt;/elem&gt;&lt;/key&gt;&lt;vspec type=&quot;4&quot; id=&quot;dd3bdfb57e9211eeb8b100000013dc2e&quot; deleted=&quot;false&quot; /&gt;&lt;/ref&gt;&lt;/qref&gt;&lt;/c&gt;&lt;/r&gt;&lt;r&gt;&lt;c&gt;&lt;qref isMod=&quot;false&quot; isInUnderL=&quot;false&quot;&gt;&lt;ref&gt;&lt;vc vcType=&quot;D&quot;&gt;&lt;clCxt consider=&quot;L&quot; /&gt;&lt;/vc&gt;&lt;key typeID=&quot;AllInOne&quot; oid=&quot;b439bee0e49438e08f9f7700124f8485&quot;&gt;&lt;elem&gt;TejasDemo01_Sender&lt;/elem&gt;&lt;elem&gt;Sender&lt;/elem&gt;&lt;elem&gt;http://test.com/tejas02&lt;/elem&gt;&lt;elem&gt;Add_Outb_Sync&lt;/elem&gt;&lt;elem /&gt;&lt;elem /&gt;&lt;/key&gt;&lt;vspec type=&quot;4&quot; id=&quot;39e315ac5baf11ee9d3e00000013dc2e&quot; deleted=&quot;false&quot; /&gt;&lt;/ref&gt;&lt;/qref&gt;&lt;/c&gt;&lt;/r&gt;&lt;r&gt;&lt;c&gt;&lt;qref isMod=&quot;false&quot; isInUnderL=&quot;false&quot;&gt;&lt;ref&gt;&lt;vc vcType=&quot;D&quot;&gt;&lt;clCxt consider=&quot;L&quot; /&gt;&lt;/vc&gt;&lt;key typeID=&quot;AllInOne&quot; oid=&quot;b56e516e397a33249a25e551a58cc148&quot;&gt;&lt;elem /&gt;&lt;elem&gt;SENDER&lt;/elem&gt;&lt;elem&gt;http://craveinfotech.com/new_test/017&lt;/elem&gt;&lt;elem&gt;New_Test_017_service_outbound&lt;/elem&gt;&lt;elem&gt;Calculator&lt;/elem&gt;&lt;elem&gt;webservice&lt;/elem&gt;&lt;/key&gt;&lt;vspec type=&quot;4&quot; id=&quot;ee6deb39c9a311eeb2cd00000013dc2e&quot; deleted=&quot;false&quot; /&gt;&lt;/ref&gt;&lt;/qref&gt;&lt;/c&gt;&lt;/r&gt;&lt;r&gt;&lt;c&gt;&lt;qref isMod=&quot;false&quot; isInUnderL=&quot;false&quot;&gt;&lt;ref&gt;&lt;vc vcType=&quot;D&quot;&gt;&lt;clCxt consider=&quot;L&quot; /&gt;&lt;/vc&gt;&lt;key typeID=&quot;AllInOne&quot; oid=&quot;b5a38429064035bc964b4395bb223585&quot;&gt;&lt;elem /&gt;&lt;elem&gt;ERP_ECC_800_TP_GLOBAL&lt;/elem&gt;&lt;elem&gt;http://techiepress.com/F2F/Supplierpayments&lt;/elem&gt;&lt;elem&gt;SI_OUT_ASYNC_SP_F2F_SOURCE&lt;/elem&gt;&lt;elem /&gt;&lt;elem /&gt;&lt;/key&gt;&lt;vspec type=&quot;4&quot; id=&quot;e5fa1433e1e711ee919d00000013dc2e&quot; deleted=&quot;false&quot; /&gt;&lt;/ref&gt;&lt;/qref&gt;&lt;/c&gt;&lt;/r&gt;&lt;r&gt;&lt;c&gt;&lt;qref isMod=&quot;false&quot; isInUnderL=&quot;false&quot;&gt;&lt;ref&gt;&lt;vc vcType=&quot;D&quot;&gt;&lt;clCxt consider=&quot;L&quot; /&gt;&lt;/vc&gt;&lt;key typeID=&quot;AllInOne&quot; oid=&quot;cb4c4d92681432b3a3dffd5c6dc02593&quot;&gt;&lt;elem&gt;VC&lt;/elem&gt;&lt;elem&gt;Sender&lt;/elem&gt;&lt;elem&gt;http://test.com/vaibhav02&lt;/elem&gt;&lt;elem&gt;Add_Outb_Sync&lt;/elem&gt;&lt;elem /&gt;&lt;elem /&gt;&lt;/key&gt;&lt;vspec type=&quot;4&quot; id=&quot;c891c9165c6d11eecdaa00000013dc2e&quot; deleted=&quot;false&quot; /&gt;&lt;/ref&gt;&lt;/qref&gt;&lt;/c&gt;&lt;/r&gt;&lt;r&gt;&lt;c&gt;&lt;qref isMod=&quot;false&quot; isInUnderL=&quot;false&quot;&gt;&lt;ref&gt;&lt;vc vcType=&quot;D&quot;&gt;&lt;clCxt consider=&quot;L&quot; /&gt;&lt;/vc&gt;&lt;key typeID=&quot;AllInOne&quot; oid=&quot;cd641283537336bdb8ccf3393b207ac1&quot;&gt;&lt;elem /&gt;&lt;elem&gt;SENDER&lt;/elem&gt;&lt;elem&gt;http://craveinfotech.com/new_test/001&lt;/elem&gt;&lt;elem&gt;NEW_TEST_001_Outb_Sync&lt;/elem&gt;&lt;elem&gt;Calculator&lt;/elem&gt;&lt;elem&gt;Webservice&lt;/elem&gt;&lt;/key&gt;&lt;vspec type=&quot;4&quot; id=&quot;de501972c04011ee91c300000013dc2e&quot; deleted=&quot;false&quot; /&gt;&lt;/ref&gt;&lt;/qref&gt;&lt;/c&gt;&lt;/r&gt;&lt;r&gt;&lt;c&gt;&lt;qref isMod=&quot;false&quot; isInUnderL=&quot;false&quot;&gt;&lt;ref&gt;&lt;vc vcType=&quot;D&quot;&gt;&lt;clCxt consider=&quot;L&quot; /&gt;&lt;/vc&gt;&lt;key typeID=&quot;AllInOne&quot; oid=&quot;cdf4098044063cca82170503571745de&quot;&gt;&lt;elem /&gt;&lt;elem&gt;BSCLNT300&lt;/elem&gt;&lt;elem&gt;http://craveinfotech.com/poc/014&lt;/elem&gt;&lt;elem&gt;POC_014_Outb_Async&lt;/elem&gt;&lt;elem /&gt;&lt;elem /&gt;&lt;/key&gt;&lt;vspec type=&quot;4&quot; id=&quot;09e8e38c019111eebd3d00000013dc2e&quot; deleted=&quot;false&quot; /&gt;&lt;/ref&gt;&lt;/qref&gt;&lt;/c&gt;&lt;/r&gt;&lt;r&gt;&lt;c&gt;&lt;qref isMod=&quot;false&quot; isInUnderL=&quot;false&quot;&gt;&lt;ref&gt;&lt;vc vcType=&quot;D&quot;&gt;&lt;clCxt consider=&quot;L&quot; /&gt;&lt;/vc&gt;&lt;key typeID=&quot;AllInOne&quot; oid=&quot;ce33b9da055d383d996b13f28d7c3346&quot;&gt;&lt;elem&gt;PY_F2F_CUSTOMER_GLOBAL&lt;/elem&gt;&lt;elem&gt;BS_F2F_CUST_SYS&lt;/elem&gt;&lt;elem&gt;http://craveinfotech.com/interfacedemo/file2file&lt;/elem&gt;&lt;elem&gt;SI_OUT_F2F_CUST_PO_CREATE&lt;/elem&gt;&lt;elem /&gt;&lt;elem /&gt;&lt;/key&gt;&lt;vspec type=&quot;4&quot; id=&quot;a3be20dbc57b11eeb1f500000013dc2e&quot; deleted=&quot;false&quot; /&gt;&lt;/ref&gt;&lt;/qref&gt;&lt;/c&gt;&lt;/r&gt;&lt;r&gt;&lt;c&gt;&lt;qref isMod=&quot;false&quot; isInUnderL=&quot;false&quot;&gt;&lt;ref&gt;&lt;vc vcType=&quot;D&quot;&gt;&lt;clCxt consider=&quot;L&quot; /&gt;&lt;/vc&gt;&lt;key typeID=&quot;AllInOne&quot; oid=&quot;cee4aef42d443ff6b31ff9bc8acaf198&quot;&gt;&lt;elem /&gt;&lt;elem&gt;SENDER&lt;/elem&gt;&lt;elem&gt;http://craveinfotech.com/product_test/001&lt;/elem&gt;&lt;elem&gt;Product_Test_001_Add_Outb_Sync&lt;/elem&gt;&lt;elem&gt;Calculator&lt;/elem&gt;&lt;elem&gt;MyService&lt;/elem&gt;&lt;/key&gt;&lt;vspec type=&quot;4&quot; id=&quot;9a6aada2ca6111ee855900000013dc2e&quot; deleted=&quot;false&quot; /&gt;&lt;/ref&gt;&lt;/qref&gt;&lt;/c&gt;&lt;/r&gt;&lt;r&gt;&lt;c&gt;&lt;qref isMod=&quot;false&quot; isInUnderL=&quot;false&quot;&gt;&lt;ref&gt;&lt;vc vcType=&quot;D&quot;&gt;&lt;clCxt consider=&quot;L&quot; /&gt;&lt;/vc&gt;&lt;key typeID=&quot;AllInOne&quot; oid=&quot;d0b7f9a72ab33bac8474bc75c52fd831&quot;&gt;&lt;elem /&gt;&lt;elem&gt;SENDER&lt;/elem&gt;&lt;elem&gt;Dummy_Namespace&lt;/elem&gt;&lt;elem&gt;Dummy_Sender&lt;/elem&gt;&lt;elem /&gt;&lt;elem /&gt;&lt;/key&gt;&lt;vspec type=&quot;4&quot; id=&quot;05d89c564ed111ef92ef00000013dc2e&quot; deleted=&quot;false&quot; /&gt;&lt;/ref&gt;&lt;/qref&gt;&lt;/c&gt;&lt;/r&gt;&lt;r&gt;&lt;c&gt;&lt;qref isMod=&quot;false&quot; isInUnderL=&quot;false&quot;&gt;&lt;ref&gt;&lt;vc vcType=&quot;D&quot;&gt;&lt;clCxt consider=&quot;L&quot; /&gt;&lt;/vc&gt;&lt;key typeID=&quot;AllInOne&quot; oid=&quot;d60b7545be7d3ef59f5a3e6f67708567&quot;&gt;&lt;elem /&gt;&lt;elem&gt;BC_VENDOR&lt;/elem&gt;&lt;elem&gt;http://picourse.com/INVOICE/A_VENDORS&lt;/elem&gt;&lt;elem&gt;Invoice_OA&lt;/elem&gt;&lt;elem /&gt;&lt;elem /&gt;&lt;/key&gt;&lt;vspec type=&quot;4&quot; id=&quot;9a92ce69faf911ee893600000013dc2e&quot; deleted=&quot;false&quot; /&gt;&lt;/ref&gt;&lt;/qref&gt;&lt;/c&gt;&lt;/r&gt;&lt;r&gt;&lt;c&gt;&lt;qref isMod=&quot;false&quot; isInUnderL=&quot;false&quot;&gt;&lt;ref&gt;&lt;vc vcType=&quot;D&quot;&gt;&lt;clCxt consider=&quot;L&quot; /&gt;&lt;/vc&gt;&lt;key typeID=&quot;AllInOne&quot; oid=&quot;dc042a43cafb3267ad7ddaea186e21cc&quot;&gt;&lt;elem /&gt;&lt;elem&gt;RECEIVER&lt;/elem&gt;&lt;elem&gt;http://craveinfotech.com/poc/013&lt;/elem&gt;&lt;elem&gt;POC_013_REST_Outb_Async_response&lt;/elem&gt;&lt;elem /&gt;&lt;elem&gt;*&lt;/elem&gt;&lt;/key&gt;&lt;vspec type=&quot;4&quot; id=&quot;5605edaf01a111eea02d00000013dc2e&quot; deleted=&quot;false&quot; /&gt;&lt;/ref&gt;&lt;/qref&gt;&lt;/c&gt;&lt;/r&gt;&lt;r&gt;&lt;c&gt;&lt;qref isMod=&quot;false&quot; isInUnderL=&quot;false&quot;&gt;&lt;ref&gt;&lt;vc vcType=&quot;D&quot;&gt;&lt;clCxt consider=&quot;L&quot; /&gt;&lt;/vc&gt;&lt;key typeID=&quot;AllInOne&quot; oid=&quot;dc7aaab5f9e33667a85f0fb4413cdf6a&quot;&gt;&lt;elem /&gt;&lt;elem&gt;Sender_SOAPUI&lt;/elem&gt;&lt;elem&gt;http://craveinfotech.com/RestToRest&lt;/elem&gt;&lt;elem&gt;SI_Fetch_Object_Out&lt;/elem&gt;&lt;elem /&gt;&lt;elem /&gt;&lt;/key&gt;&lt;vspec type=&quot;4&quot; id=&quot;f7a2e4ef009511efbe1800000013dc2e&quot; deleted=&quot;false&quot; /&gt;&lt;/ref&gt;&lt;/qref&gt;&lt;/c&gt;&lt;/r&gt;&lt;r&gt;&lt;c&gt;&lt;qref isMod=&quot;false&quot; isInUnderL=&quot;false&quot;&gt;&lt;ref&gt;&lt;vc vcType=&quot;D&quot;&gt;&lt;clCxt consider=&quot;L&quot; /&gt;&lt;/vc&gt;&lt;key typeID=&quot;AllInOne&quot; oid=&quot;e40333923a843396990aac0807ce7ecc&quot;&gt;&lt;elem&gt;PY_F2F_CUST_GLOBAL&lt;/elem&gt;&lt;elem&gt;BS_F2F_CUST_SYSTEM&lt;/elem&gt;&lt;elem&gt;http://craveinfotech.com/interfacedemo/file2file&lt;/elem&gt;&lt;elem&gt;SI_OUT_F2F_CUST_PO_CREATE&lt;/elem&gt;&lt;elem /&gt;&lt;elem /&gt;&lt;/key&gt;&lt;vspec type=&quot;4&quot; id=&quot;93ff6c21af8411eea6e100000013dc2e&quot; deleted=&quot;false&quot; /&gt;&lt;/ref&gt;&lt;/qref&gt;&lt;/c&gt;&lt;/r&gt;&lt;r&gt;&lt;c&gt;&lt;qref isMod=&quot;false&quot; isInUnderL=&quot;false&quot;&gt;&lt;ref&gt;&lt;vc vcType=&quot;D&quot;&gt;&lt;clCxt consider=&quot;L&quot; /&gt;&lt;/vc&gt;&lt;key typeID=&quot;AllInOne&quot; oid=&quot;e616979a19cc338fbd830726d7d8afa2&quot;&gt;&lt;elem /&gt;&lt;elem&gt;SENDER&lt;/elem&gt;&lt;elem&gt;http://craveinfotech.com/poc/010&lt;/elem&gt;&lt;elem&gt;POC_010_FTP_Outb_Async_response&lt;/elem&gt;&lt;elem /&gt;&lt;elem /&gt;&lt;/key&gt;&lt;vspec type=&quot;4&quot; id=&quot;40789231018011ee90cb00000013dc2e&quot; deleted=&quot;false&quot; /&gt;&lt;/ref&gt;&lt;/qref&gt;&lt;/c&gt;&lt;/r&gt;&lt;r&gt;&lt;c&gt;&lt;qref isMod=&quot;false&quot; isInUnderL=&quot;false&quot;&gt;&lt;ref&gt;&lt;vc vcType=&quot;D&quot;&gt;&lt;clCxt consider=&quot;L&quot; /&gt;&lt;/vc&gt;&lt;key typeID=&quot;AllInOne&quot; oid=&quot;e6eb12ebd9583f4e81def44afd38eca9&quot;&gt;&lt;elem /&gt;&lt;elem&gt;SENDER&lt;/elem&gt;&lt;elem&gt;http://craveinfotech.com/poc/017/dummy&lt;/elem&gt;&lt;elem&gt;POC_017_Dummy_Outb_Async&lt;/elem&gt;&lt;elem /&gt;&lt;elem /&gt;&lt;/key&gt;&lt;vspec type=&quot;4&quot; id=&quot;0edd5d9403f011eec3ec00000013dc2e&quot; deleted=&quot;false&quot; /&gt;&lt;/ref&gt;&lt;/qref&gt;&lt;/c&gt;&lt;/r&gt;&lt;r&gt;&lt;c&gt;&lt;qref isMod=&quot;false&quot; isInUnderL=&quot;false&quot;&gt;&lt;ref&gt;&lt;vc vcType=&quot;D&quot;&gt;&lt;clCxt consider=&quot;L&quot; /&gt;&lt;/vc&gt;&lt;key typeID=&quot;AllInOne&quot; oid=&quot;e8e1ff47889734589f0faec2a3d77e49&quot;&gt;&lt;elem&gt;Training01_Sender&lt;/elem&gt;&lt;elem&gt;Sender&lt;/elem&gt;&lt;elem&gt;http://test.com/training02&lt;/elem&gt;&lt;elem&gt;Add_Outb_Sync&lt;/elem&gt;&lt;elem /&gt;&lt;elem /&gt;&lt;/key&gt;&lt;vspec type=&quot;4&quot; id=&quot;dc8bd89553c811ee843800000013dc2e&quot; deleted=&quot;false&quot; /&gt;&lt;/ref&gt;&lt;/qref&gt;&lt;/c&gt;&lt;/r&gt;&lt;r&gt;&lt;c&gt;&lt;qref isMod=&quot;false&quot; isInUnderL=&quot;false&quot;&gt;&lt;ref&gt;&lt;vc vcType=&quot;D&quot;&gt;&lt;clCxt consider=&quot;L&quot; /&gt;&lt;/vc&gt;&lt;key typeID=&quot;AllInOne&quot; oid=&quot;f5bc3ce54a993051a131d951d1a4ef00&quot;&gt;&lt;elem /&gt;&lt;elem&gt;BSCLNT300&lt;/elem&gt;&lt;elem&gt;http://craveinfotech.com/poc/012&lt;/elem&gt;&lt;elem&gt;POC_012_Outb_Async&lt;/elem&gt;&lt;elem /&gt;&lt;elem /&gt;&lt;/key&gt;&lt;vspec type=&quot;4&quot; id=&quot;946790cc018f11ee810e00000013dc2e&quot; deleted=&quot;false&quot; /&gt;&lt;/ref&gt;&lt;/qref&gt;&lt;/c&gt;&lt;/r&gt;&lt;r&gt;&lt;c&gt;&lt;qref isMod=&quot;false&quot; isInUnderL=&quot;false&quot;&gt;&lt;ref&gt;&lt;vc vcType=&quot;D&quot;&gt;&lt;clCxt consider=&quot;L&quot; /&gt;&lt;/vc&gt;&lt;key typeID=&quot;AllInOne&quot; oid=&quot;fd5083b09c2135bcbb010ae42996373c&quot;&gt;&lt;elem /&gt;&lt;elem&gt;BC_REST_SENDER&lt;/elem&gt;&lt;elem&gt;http://craveinfotech.com/RestToRest&lt;/elem&gt;&lt;elem&gt;SI_Fetch_Object_Out&lt;/elem&gt;&lt;elem /&gt;&lt;elem /&gt;&lt;/key&gt;&lt;vspec type=&quot;4&quot; id=&quot;1164baf7f8ca11eecf2900000013dc2e&quot; deleted=&quot;false&quot; /&gt;&lt;/ref&gt;&lt;/qref&gt;&lt;/c&gt;&lt;/r&gt;&lt;/matrix&gt;&lt;messages xmlns=&quot;&quot;&gt;
+&lt;/messages&gt;&lt;/queryResult&gt;</textarea><br>
+</body></html>

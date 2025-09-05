@@ -1,0 +1,3 @@
+String outputStr = "";
+outputStr = var1.toLowerCase();
+return outputStr;

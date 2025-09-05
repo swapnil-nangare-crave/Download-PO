@@ -104,7 +104,7 @@ def JAVA_MAPPING(key, swcguid):
         print(f"Error fetching Java Mapping: {e}")
         return None
 
-def extract_java_code(jar_content_base64, output_dir="output", filename="mapping.jar"):
+def extract_java_code(jar_content_base64, output_dir="bytecode", filename="mapping.jar"):
     """
     Decodes the Base64 JAR content and saves it to a file.
     """
@@ -133,9 +133,12 @@ def main():
         return
 
     # Save the XML to a file for debugging
-    with open("ico_list.xml", "w", encoding="utf-8") as f:
+    metadata_dir = "metadata"
+    if not os.path.exists(metadata_dir):
+        os.makedirs(metadata_dir)
+    with open(os.path.join(metadata_dir, "ico_list_java.xml"), "w", encoding="utf-8") as f:
         f.write(ico_list_xml)
-    print("Saved ICO list response to ico_list.xml")
+    print("Saved ICO list response to metadata/ico_list_java.xml")
 
     # 2. Parse ICO List XML from HTML response
     try:
@@ -195,6 +198,10 @@ def main():
         if not ico_details_xml:
             continue
 
+        ico_key_filename = ico_key.replace('|','_').replace('/','_').replace(':','_').replace('*','_')
+        with open(os.path.join("metadata", f"ico_details_{ico_key_filename}.xml"), "w", encoding="utf-8") as f:
+            f.write(ico_details_xml)
+
         try:
             # Correct namespace for the ICO details XML
             namespaces = {'p1': 'urn:sap-com:xi'}
@@ -222,6 +229,10 @@ def main():
                     if not om_details_xml:
                         continue
 
+                    om_key_filename = om_key.replace('|','_').replace('/','_').replace(':','_').replace('*','_')
+                    with open(os.path.join("metadata", f"om_details_{om_key_filename}.xml"), "w", encoding="utf-8") as f:
+                        f.write(om_details_xml)
+
                     om_root = ET.fromstring(om_details_xml)
                     # Check for Java Mapping
                     java_mapping_key = om_root.find(".//p1:key[@typeID='MAP_ARCHIVE_PRG']", namespaces)
@@ -237,6 +248,10 @@ def main():
                         if not java_mapping_xml:
                             continue
 
+                        java_mapping_filename = java_mapping_full_key.replace('|','_').replace('/','_').replace(':','_').replace('*','_')
+                        with open(os.path.join("metadata", f"java_mapping_{java_mapping_filename}.xml"), "w", encoding="utf-8") as f:
+                            f.write(java_mapping_xml)
+
                         java_mapping_root = ET.fromstring(java_mapping_xml)
                         # Correct namespace for the archive
                         archive_ns = {'ar': 'urn:sap-com:xi:mapping:archive'}
@@ -246,7 +261,7 @@ def main():
                             # Remove the '!jar!' prefix and decode the base64 content
                             jar_content_base64 = blob_element.text.replace('!jar!', '')
                             # Use ICO key and OM name for a more descriptive filename
-                            filename = f"{ico_key.replace('|','_').replace('/','_').replace(':','_')}_{om_name}.jar"
+                            filename = f"{ico_key.replace('|','_').replace('/','_').replace(':','_').replace('*','_')}_{om_name}.jar"
                             extract_java_code(jar_content_base64, filename=filename)
                         else:
                             print("Could not find blob content in the response.")

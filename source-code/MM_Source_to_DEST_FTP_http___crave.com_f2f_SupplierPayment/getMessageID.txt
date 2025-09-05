@@ -1,0 +1,7 @@
+String MessageID;
+ 
+java.util.Map param = container.getTransformationParameters();
+ 
+MessageID = (String) param.get (StreamTransformationConstants.MESSAGE_ID);
+ 
+return MessageID;

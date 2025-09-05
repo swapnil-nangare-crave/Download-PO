@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?><functionstorage version="XI7.1"><key><key typeID="FUNC_LIB" oid="d1d459ed1b393feaac9474dd09209ee8"><elem>POC_011</elem><elem>http://craveinfotech.com/poc/011</elem></key></key><classname>Library</classname><package>com.craveinfotech.poc._11</package><jdkVersion>15</jdkVersion><imports><![CDATA[import com.sap.aii.mapping.api.*;
+import com.sap.aii.mapping.lookup.*;
+import com.sap.aii.mappingtool.tf7.rt.*;
+import java.io.*;
+import java.lang.reflect.*;
+import java.util.*;
+]]></imports><globals><javaText><![CDATA[]]></javaText></globals><init><functionmodel><signature cacheType="2"/><name>init</name><key>%init%</key><tab/><title/><uiTitle/><implementation type="udf"><javaText><![CDATA[]]></javaText></implementation></functionmodel></init><cleanup><javaText><![CDATA[]]></javaText></cleanup><functionmodel><signature cacheType="1"><argument tp="0" nm="a" jtp="String"><uiTitle/></argument><argument tp="1" nm="result" jtp="ResultList"><uiTitle/></argument></signature><name>Calculate</name><key>36daf16e-fb64-11ed-9edf-00ff1e627f11</key><tab>Library</tab><title>Calculate</title><uiTitle>Calculate</uiTitle><implementation type="udf"><javaText><![CDATA[int j = 0;
+for (String element : a) {
+    if (element != null) {
+        int k = Integer.parseInt(element);
+        j += k;
+    }
+}
+result.addValue(j);]]></javaText></implementation></functionmodel><usedjars/></functionstorage>

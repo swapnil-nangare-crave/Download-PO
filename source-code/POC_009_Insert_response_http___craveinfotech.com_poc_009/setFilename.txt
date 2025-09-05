@@ -1,0 +1,14 @@
+DynamicConfiguration conf = (DynamicConfiguration) container.getTransformationParameters().get(StreamTransformationConstants.DYNAMIC_CONFIGURATION);
+DynamicConfigurationKey key = DynamicConfigurationKey.create("http://sap.com/xi/XI/System/File","FileName");
+
+String strFileName = "";
+strFileName = "OC_" + po + "_" + date + ".xml";
+conf.put(key, strFileName); //Set the Key-Value
+
+DynamicConfigurationKey key2 = DynamicConfigurationKey.create("http://sap.com/xi/XI/System/File","Directory");
+
+String strDir = "";
+strDir = "/transfer/02160";
+conf.put(key2, strDir); //Set the Key-Value
+
+return "";

@@ -1,0 +1,8 @@
+int j = 0;
+for (String element : a) {
+    if (element != null) {
+        int k = Integer.parseInt(element);
+        j += k;
+    }
+}
+result.addValue(j);
