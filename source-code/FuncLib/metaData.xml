@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?><functionstorage version="XI7.1"><key><key typeID="FUNC_LIB" oid="504d2794be443658a4a1c3fae9a2cb2f"><elem>FuncLib</elem><elem>http://test.com/tejas_filetofile</elem></key></key><classname>FuncLib</classname><package>com.test.tejas_filetofile</package><jdkVersion>15</jdkVersion><imports><![CDATA[import com.sap.aii.mapping.api.*;
-import com.sap.aii.mapping.lookup.*;
-import com.sap.aii.mappingtool.tf7.rt.*;
-import java.io.*;
-import java.lang.reflect.*;
-import java.util.*;
-]]></imports><globals><javaText><![CDATA[]]></javaText></globals><init><functionmodel><signature cacheType="2"/><name>init</name><key>%init%</key><tab/><title/><uiTitle/><implementation type="udf"><javaText><![CDATA[]]></javaText></implementation></functionmodel></init><cleanup><javaText><![CDATA[]]></javaText></cleanup><functionmodel><signature cacheType="0"><argument tp="0" nm="inputString" jtp="String"><uiTitle/></argument></signature><name>upperCase</name><key>36206812-e3a9-11ee-b055-00ff1d6453fc</key><tab>FuncLib</tab><title>upperCase</title><uiTitle/><implementation type="udf"><javaText><![CDATA[String outputString = "";
-outputString = inputString.toUpperCase();
-return outputString;]]></javaText></implementation></functionmodel><usedjars/></functionstorage>

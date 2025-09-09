@@ -2,133 +2,128 @@
 
 ## Overview
 
-This project provides a set of Python scripts to automate the extraction of Java Mappings and User-Defined Functions (UDFs) from a SAP Process Orchestration (PO) system. It connects to the SAP PO server, retrieves a list of Integration Configurations (ICOs), and then downloads the associated Java Mapping JARs, Function Library data, and their corresponding metadata.
+This project provides a set of Python scripts designed for the automated, efficient, and clean extraction of Java Mappings and User-Defined Functions (UDFs) directly from a SAP Process Orchestration (PO) system. By processing objects entirely in memory, the tools avoid intermediate file clutter and deliver ready-to-use source code in `.zip` archives.
 
 ## Features
 
-*   **Java Mapping Extraction:** Downloads the JAR files for Java Mappings used in Operation Mappings.
-*   **UDF Extraction:** A comprehensive process to find and extract the source code of User-Defined Functions from both Function Libraries and Message Mappings.
-*   **Comprehensive Mapping Search:** The UDF extraction script now searches for mappings in `MAP0`, `REQUEST_TRAFO`, and `RESPONSE_TRAFO` roles to ensure all potential UDFs are found.
-*   **Source Code Generation:** The scripts can parse the extracted Function Library data and Message Mapping data to generate human-readable Java source code files for the UDFs.
-*   **Metadata Storage:** Saves all the XML responses received from the SAP PO server for each step of the process. This is useful for debugging and for a detailed analysis of the integration objects.
-*   **Configurable:** The scripts can be easily configured to connect to different SAP PO environments by changing the connection details in the configuration section of the scripts.
+*   **Direct-to-ZIP Extraction:** All extracted artifacts are processed in memory and saved directly into self-contained `.zip` archives. This ensures a clean project directory and simplifies source code management.
+*   **No Intermediate Files:** The entire workflow is optimized to prevent the creation of temporary or intermediate files (such as raw XML responses, bytecode, or partially extracted UDFs). All transformations happen in memory.
+*   **Java Mapping Decompilation (`app.py`):
+    *   Fetches Java Mapping JARs from the PO system.
+    *   Inspects the JAR content in memory.
+    *   If `.class` files are present, it decompiles them into human-readable `.java` source code using the Procyon decompiler.
+    *   The decompiled `.java` files, along with any other original resources (like `MANIFEST.MF`), are then packaged into a `.zip` archive.
+    *   If no `.class` files are found (e.g., it's an empty JAR or only contains resources), the original JAR content is simply re-packaged into a `.zip`.
+*   **Comprehensive UDF Extraction (`udf_extractor.py`):** This script handles two distinct types of UDFs:
+    *   **Message Mapping UDFs:** Extracts UDFs embedded directly within Message Mappings. This involves a complex multi-stage in-memory decompression and parsing process to retrieve the raw Java code blocks.
+    *   **Function Library UDFs:** Extracts UDFs grouped within Function Libraries. This also involves in-memory decompression and XML parsing to generate the corresponding Java source code.
+*   **Parallel Processing:** Both `app.py` and `udf_extractor.py` utilize `concurrent.futures.ThreadPoolExecutor` to perform API calls and processing concurrently. This significantly reduces the overall execution time, especially when dealing with a large number of integration objects.
+*   **Environment-based Configuration:** Sensitive connection details (like `BASE_URL`, `CLIENT_ID`, `CLIENT_SECRET`, and `JAVA_EXECUTABLE_PATH`) are managed securely via a `.env` file, keeping them out of the main codebase.
 
-## UDF Extraction Methods
+## Detailed Extraction Flows
 
-This project has uncovered two distinct methods for extracting User-Defined Functions (UDFs) from SAP PO:
+Both `app.py` and `udf_extractor.py` follow a similar high-level pattern:
+1.  **Connect to SAP PO:** Establish a secure connection using credentials from the `.env` file.
+2.  **Fetch ICO List:** Retrieve a list of all Integrated Configurations (ICOs) from the Integration Directory.
+3.  **Parallel Traversal:** Process ICOs concurrently, traversing the object hierarchy (Operation Mappings, Message Mappings, Function Libraries) to identify and extract relevant artifacts.
+4.  **In-Memory Processing:** All data blobs (JARs, XMLs, nested zips) are handled in memory without writing intermediate files to disk.
+5.  **Direct-to-ZIP Output:** The final, processed source code is written directly into `.zip` archives in the designated output directories.
 
-1.  **From Function Libraries:** UDFs can be grouped into Function Libraries. In this case, the `udf_extractor.py` script downloads the Function Library as a zip archive. This archive contains a `metaData.xml` file, which holds the details of the UDFs. The `process_udfs.py` script is then used to parse this XML file and generate the corresponding `.java` source code.
+### Java Mapping Extraction (`app.py`)
 
-2.  **From Message Mappings:** UDFs can also be embedded directly within a Message Mapping. The `udf_extractor.py` script can identify and extract this embedded code. The script decodes a base64 encoded zip file from the message mapping response, which contains another nested zip file. After unzipping the nested archive, the script reveals the Java source code of the UDF, which is then saved as a `.java` file.
+This script focuses on extracting Java Mapping programs linked to Operation Mappings:
 
-## Workflow
+1.  **Identify Java Mapping:** From the ICO details, it finds associated Operation Mappings (`MAP0` role). From the Operation Mapping details, it identifies linked Java Mapping programs (`MAP_ARCHIVE_PRG` typeID).
+2.  **Fetch JAR Blob:** It fetches the Java Mapping content, which is a base64-encoded JAR file blob (`!jar!` prefixed).
+3.  **In-Memory Decompilation:** The blob is decoded to raw JAR data. This data is then inspected:
+    *   If `.class` files are found, each is extracted to a temporary file, decompiled using `procyon-decompiler-0.6.0.jar`, and the resulting `.java` source is added to a new `.zip` archive.
+    *   Other non-`.class` files from the original JAR (e.g., `MANIFEST.MF`) are copied directly to the new `.zip` archive.
+    *   If no `.class` files are found, the original JAR content is simply re-zipped.
+4.  **Save Archive:** The final `.zip` archive (e.g., `MyJavaMapping.zip`) is saved to the `output/` directory.
 
-The scripts follow this general workflow:
+### UDF Extraction (`udf_extractor.py`)
 
-1.  **Connect to SAP PO:** The scripts establish a connection to the SAP PO system using the provided `BASE_URL`, `CLIENT_ID`, and `CLIENT_SECRET`.
-2.  **Fetch ICO List:** They retrieve a list of all Integrated Configurations (ICOs) from the server.
-3.  **Traverse Object Hierarchy:** For each ICO, the scripts traverse the hierarchy of related objects to find and extract the desired artifacts.
-4.  **Save Artifacts:** All downloaded and extracted files are saved to their respective directories (`bytecode/`, `source-code/`, `metadata/`).
+This script handles both Message Mapping UDFs and Function Library UDFs, often found linked from Message Mappings (`XI_TRAFO` typeID):
 
-### Java Mapping Extraction Flow (`app.py`)
+#### Message Mapping UDFs
 
-The `app.py` script performs the following steps to extract Java Mappings:
+1.  **Identify Message Mapping:** From the ICO details, it finds Operation Mappings. From Operation Mapping details, it identifies linked Message Mappings.
+2.  **Fetch Source Code Blob:** It fetches the Message Mapping details, which may contain an embedded source code blob (`tr:SourceCode/tr:blob`). This blob is base64-encoded and prefixed with `!zip!`.
+3.  **Triple-Unzip in Memory:** This is a multi-stage decompression:
+    *   The initial blob is decoded to `zip_data` (Zip 1).
+    *   Zip 1 is unzipped in memory. It is expected to contain a single file (often named `value`), which is itself a zip archive (Zip 2).
+    *   Zip 2 is unzipped in memory. It is expected to contain a single file (often named `value.java`), which holds the raw Java source code for all embedded UDFs within that Message Mapping.
+4.  **Parse Java Blocks:** The `value.java` content is parsed using regular expressions to identify and extract individual UDF code blocks (delimited by `// beginning of ...` and `// end of ...` comments).
+5.  **Save UDF Archive:** Each extracted UDF code block is saved as a separate `.java` file within a new `.zip` archive (e.g., `MyMessageMappingUDFs.zip`), which is then saved to the `source-code/` directory.
 
-1.  **Get ICO List:** Fetches the list of all ICOs from the server.
-2.  **Get ICO Details:** For each ICO, it fetches the detailed XML configuration.
-3.  **Find Operation Mapping:** It parses the ICO XML to find the associated Operation Mapping.
-4.  **Get Operation Mapping Details:** It then fetches the detailed XML for the Operation Mapping.
-5.  **Find Java Mapping:** The script parses the Operation Mapping XML to find any linked Java Mappings.
-6.  **Download Java Mapping:** If a Java Mapping is found, it fetches the content, which is a base64 encoded JAR file.
-7.  **Save JAR File:** The script decodes the base64 content and saves the resulting JAR file to the `bytecode/` directory.
-8.  **Save Metadata:** All intermediate XML responses are saved to the `metadata/` directory.
+#### Function Library UDFs
 
-### UDF Extraction Flow (`udf_extractor.py` and `process_udfs.py`)
-
-The extraction of User-Defined Functions is a streamlined process that handles both extraction methods:
-
-**Step 1: `udf_extractor.py` - Find and Download UDFs**
-
-1.  **Get ICO List:** Fetches the list of all ICOs from the server.
-2.  **Get ICO Details:** For each ICO, it fetches the detailed XML configuration.
-3.  **Find Mappings:** It parses the ICO XML to find all associated mappings with roles `MAP0`, `REQUEST_TRAFO`, and `RESPONSE_TRAFO`.
-4.  **Get Operation/Message Mapping Details:** It traverses the mapping hierarchy to find the associated Message Mapping.
-5.  **Extract UDFs:** The script then automatically handles both UDF extraction methods:
-    *   **For Function Libraries:** It finds any linked Function Libraries, downloads the raw data, and extracts the `metaData.xml` file.
-    *   **For Message Mappings:** It finds any embedded UDFs, decodes the base64 content, performs a double-unzip, and saves the resulting Java source code.
-6.  **Save Metadata:** All intermediate XML responses are saved to the `metadata/` directory.
-
-**Step 2: `process_udfs.py` - Generate UDF Source Code from Function Libraries**
-
-This script is now only needed for UDFs extracted from **Function Libraries**.
-
-1.  **Scan for Raw Data:** This script scans the `source-code` directory for the raw UDF data from Function Libraries (specifically, the directories containing a `metaData.xml` file).
-2.  **Parse and Generate Java Code:** The script parses the `metaData.xml` file to get the UDF's package, class name, and Java code. It then constructs a complete, human-readable `.java` file.
-3.  **Save Java File:** The final `.java` source file is saved in the same directory where the raw data was found (e.g., `source-code/FuncLib/FuncLib.java`).
-
-**Note on `udf_parser.py`:** The `udf_parser.py` script is an older or alternative version of `process_udfs.py`. For processing Function Libraries, `process_udfs.py` should be used.
+1.  **Identify Function Library:** From Message Mapping details, it identifies linked Function Libraries (`FUNC_LIB` typeID).
+2.  **Fetch Blob:** It fetches the Function Library details, which contain a base64-encoded blob (`fl:blob`) prefixed with `!zip!`.
+3.  **Double-Unzip in Memory:** This is a two-stage decompression:
+    *   The initial blob is decoded to `zip_data` (Zip 1).
+    *   Zip 1 is unzipped in memory. It is expected to contain a single file (often named `value`), which is itself a zip archive (Zip 2).
+    *   Zip 2 is unzipped in memory. It is expected to contain `metaData.xml`, which defines the Function Library's structure and UDFs.
+4.  **Generate Java Code:** The `metaData.xml` content is parsed to extract the package, class name, imports, and individual function implementations. This data is then used to construct a complete, human-readable `.java` source file for the entire Function Library.
+5.  **Save Archive:** The generated `.java` file is then packaged into a new `.zip` archive (e.g., `MyFunctionLibrary.zip`), which is saved to the `source-code/` directory.
 
 ## How to Use
 
 ### Prerequisites
 
-*   Python 3
-*   The `requests` library. You can install it using pip:
+*   Python 3 (recommended 3.8+)
+*   A Java Development Kit (JDK) installed and configured in your system's PATH, or its full path specified in `.env` (required for `app.py`'s decompilation).
+*   Required Python libraries: `requests`, `python-dotenv`. Install them via `pip`:
     ```bash
     pip install -r requirements.txt
     ```
 
 ### Configuration
 
-Before running the scripts, you need to configure the connection details for your SAP PO system. Open `app.py` and `udf_extractor.py` and update the following variables in the configuration section at the top of each file:
+Create a `.env` file in the root of your project directory with the following content. Replace placeholders with your actual SAP PO system details:
 
-```python
-# --- Configuration ---
-BASE_URL = "http://your-sap-po-host:50000"
-CLIENT_ID = "your-client-id"
-CLIENT_SECRET = "your-client-secret"
-# ---
+```dotenv
+# SAP PO Connection Details
+BASE_URL="http://your-sap-po-host:50000"
+CLIENT_ID="your-client-id"
+CLIENT_SECRET="your-client-secret"
+
+# Full path to your java.exe for decompilation (used by app.py)
+# On Windows, use double backslashes (\\) or forward slashes (/) in the path.
+# Example (Windows): JAVA_EXECUTABLE_PATH="C:\\Program Files\\Java\\jdk-11\\bin\\java.exe"
+# Example (Linux/macOS): JAVA_EXECUTABLE_PATH="/usr/bin/java"
+JAVA_EXECUTABLE_PATH="java" # Default to 'java' if in PATH
 ```
 
 ### Running the Scripts
 
 1.  **Extract Java Mappings:**
-    To extract the Java Mappings, run the `app.py` script:
+    To extract and decompile Java Mappings, run `app.py`:
     ```bash
     python app.py
     ```
 
-2.  **Extract UDFs:**
-    This is now a more streamlined two-step process.
-    
-    First, run the `udf_extractor.py` script to find and download the raw UDF data from both Function Libraries and Message Mappings:
+2.  **Extract UDFs and Function Libraries:**
+    To extract all UDFs from Message Mappings and Function Libraries, run `udf_extractor.py`:
     ```bash
     python udf_extractor.py
-    ```
-    
-    Second, run the `process_udfs.py` script to generate the Java source code from the Function Library data:
-    ```bash
-    python process_udfs.py
     ```
 
 ### Output
 
-The scripts will create the following directories to store the extracted artifacts:
+The scripts will automatically create the necessary output directories if they don't already exist:
 
-*   `bytecode/`: Contains the downloaded Java Mapping JAR files.
-*   `source-code/`: Contains the extracted UDF source code as `.java` files, from both Function Libraries and Message Mappings.
-*   `metadata/`: Contains all the raw XML responses from the SAP PO server, which can be used for debugging and analysis.
+*   `output/`: Contains `.zip` archives of the processed Java Mappings. Each archive includes decompiled `.java` source code (if `.class` files were present) and other original JAR resources.
+*   `source-code/`: Contains `.zip` archives of extracted UDFs and Function Libraries. UDF archives contain individual `.java` files for each UDF. Function Library archives contain a single `.java` file representing the entire library.
 
 ## Project Structure
 
 ```
 .
-├── app.py              # Script to extract Java Mappings
-├── udf_extractor.py    # Script to find and download UDFs from both Function Libraries and Message Mappings
-├── process_udfs.py     # Script to generate UDF source code from Function Libraries
-├── udf_parser.py       # (Deprecated) Older version of the UDF parser
-├── requirements.txt    # Python package requirements
-├── bytecode/           # Output directory for JAR files
-├── source-code/        # Output directory for extracted source code
-└── metadata/           # Output directory for XML metadata
+├── .env                # Environment configuration file
+├── app.py              # Script for Java Mapping extraction and decompilation
+├── udf_extractor.py    # Script for UDF and Function Library extraction
+├── requirements.txt    # Python package dependencies
+├── output/             # Output directory for Java Mapping archives
+└── source-code/        # Output directory for UDF and Function Library archives
 ```

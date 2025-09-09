@@ -6,6 +6,8 @@ import html
 import zipfile
 import io
 import re
+import concurrent.futures
+import threading
 
 # --- Configuration ---
 from dotenv import load_dotenv
@@ -17,18 +19,31 @@ CLIENT_SECRET = os.getenv("CLIENT_SECRET")
 # ---
 
 #==============================================================================
-# HELPER FUNCTIONS (Consolidated from other scripts)
+# THREAD-SAFE SET for tracking processed items
+#==============================================================================
+class ThreadSafeSet:
+    """A set that is safe to access from multiple threads."""
+    def __init__(self):
+        self._set = set()
+        self._lock = threading.Lock()
+
+    def add(self, item):
+        """Adds an item to the set. Returns True if added, False if it already existed."""
+        with self._lock:
+            if item in self._set:
+                return False
+            self._set.add(item)
+            return True
+
+#==============================================================================
+# HELPER FUNCTIONS (for parsing and processing)
 #==============================================================================
 
 def parse_udfs_from_java_content(java_content):
-    """
-    Parses a string containing raw Java code from a message mapping, 
-    extracts individual UDF blocks, and returns them in a dictionary.
-    """
+    """Parses raw Java code to extract UDF blocks."""
     extracted_blocks = {}
     lines = java_content.splitlines()
     in_block = False
-    # Blocks like 'import' are not real UDFs, so we skip them.
     skipping_blocks = ['init', 'import', 'cleanUp', 'attributes']
     current_block_name = None
     current_block_code = []
@@ -46,10 +61,8 @@ def parse_udfs_from_java_content(java_content):
             current_block_code = []
         elif end_match and in_block:
             in_block = False
-            # Sanitize the block name to be a valid Java class name
-            file_name = f"{current_block_name}.java"
+            file_name = f"{current_block_name}.txt"
             extracted_blocks[file_name] = "\n".join(current_block_code)
-            print(f"    Extracted UDF block: '{current_block_name}'")
             current_block_code = []
         elif in_block:
             current_block_code.append(line)
@@ -57,36 +70,30 @@ def parse_udfs_from_java_content(java_content):
     return extracted_blocks
 
 def generate_java_from_funclib_xml(xml_content):
-    """
-    Parses the metaData.xml from a Function Library, extracts UDF information,
-    and returns the class name and generated Java code.
-    """
+    """Parses the XML content from a Function Library to generate Java source."""
     try:
         root = ET.fromstring(xml_content)
-        package_name = root.find('package').text
-        class_name = root.find('classname').text
-        imports = root.find('imports').text
+        package_elem = root.find('package')
+        if package_elem is None or package_elem.text is None: return None, None
+        package_name = package_elem.text
 
-        java_code = f"package {package_name};\n\n"
-        java_code += imports + "\n"
-        java_code += f"public class {class_name} {{\n\n"
+        class_elem = root.find('classname')
+        if class_elem is None or class_elem.text is None: return None, None
+        class_name = class_elem.text
+
+        imports_elem = root.find('imports')
+        imports = imports_elem.text if imports_elem is not None and imports_elem.text is not None else ""
+
+        java_code = f"package {package_name};\n\n{imports}\n\npublic class {class_name} {{\n\n"
 
         for function in root.findall('functionmodel'):
             function_name = function.find('name').text
-            args = []
-            for arg in function.findall('signature/argument'):
-                arg_type = arg.get('jtp')
-                arg_name = arg.get('nm')
-                args.append(f"{arg_type} {arg_name}")
-            
+            args = [f"{arg.get('jtp')} {arg.get('nm')}" for arg in function.findall('signature/argument')]
             java_text_element = function.find('implementation/javaText')
-            if java_text_element is not None:
+            if java_text_element is not None and java_text_element.text is not None:
                 udf_code = java_text_element.text
-                return_type = "String"  # Default return type
-
-                java_code += f"    public {return_type} {function_name}({', '.join(args)}) {{\n"
-                java_code += f"        {udf_code.strip()}\n"
-                java_code += f"    }}\n\n"
+                return_type = "String"
+                java_code += f"    public {return_type} {function_name}({', '.join(args)}) {{\n        {udf_code.strip()}\n    }}\n\n"
 
         java_code += "}"
         return class_name, java_code
@@ -124,33 +131,108 @@ def ICO_DETAILS(ico_key):
 def OPERATION_MAPPING_DETAILS(key, swcguid):
     url = f"{BASE_URL}/rep/read/ext"
     params = {"method": "PLAIN", "TYPE": "MAPPING", "KEY": key, "VC": "SWC", "SWCGUID": swcguid, "SP": "-1", "UC": "false", "release": "7.0"}
-    return execute_api_call(url, params, "Error fetching Operation Mapping details")
+    return execute_api_call(url, params, f"Error fetching Operation Mapping details for {key}")
 
 def MESSAGE_MAPPING_DETAILS(key, swcguid):
     url = f"{BASE_URL}/rep/read/ext"
     params = {"method": "PLAIN", "TYPE": "XI_TRAFO", "KEY": key, "VC": "SWC", "SWCGUID": swcguid, "SP": "-1", "UC": "true", "release": "7.0"}
-    return execute_api_call(url, params, "Error fetching Message Mapping details")
+    return execute_api_call(url, params, f"Error fetching Message Mapping details for {key}")
 
 def FUNCTION_LIBRARY_DETAILS(key, swcguid):
     url = f"{BASE_URL}/rep/read/ext"
     params = {"method": "PLAIN", "TYPE": "FUNC_LIB", "KEY": key, "VC": "SWC", "SWCGUID": swcguid, "SP": "-1", "UC": "true", "release": "7.0"}
-    return execute_api_call(url, params, "Error fetching Function Library details")
+    return execute_api_call(url, params, f"Error fetching Function Library details for {key}")
 
 #==============================================================================
 # MAIN ORCHESTRATION LOGIC
 #==============================================================================
 
+def process_single_ico(ico_key, processed_func_libs, output_dir):
+    """Processes a single ICO to find and extract UDFs and Function Libraries."""
+    print(f"--- Processing ICO: {ico_key} ---")
+    ico_details_xml = ICO_DETAILS(ico_key)
+    if not ico_details_xml: return
+
+    namespaces = {'p1': 'urn:sap-com:xi'}
+    ico_root = ET.fromstring(ico_details_xml)
+    
+    for map_role in ico_root.findall(".//*[@role='MAP0']", namespaces):
+        om_key_elem = map_role.find(".//p1:key[@typeID='MAPPING']", namespaces)
+        if om_key_elem is not None:
+            om_name, om_namespace = [e.text for e in om_key_elem.findall("p1:elem", namespaces)]
+            om_key = f"{om_name}|{om_namespace}"
+            swcguid = map_role.find(".//p1:vc", namespaces).get('swcGuid')
+
+            om_details_xml = OPERATION_MAPPING_DETAILS(om_key, swcguid)
+            if not om_details_xml: continue
+            
+            om_root = ET.fromstring(om_details_xml)
+            
+            for mm_key_elem in om_root.findall(".//p1:key[@typeID='XI_TRAFO']", namespaces):
+                mm_name, mm_namespace = [e.text for e in mm_key_elem.findall("p1:elem", namespaces)]
+                mm_key = f"{mm_name}|{mm_namespace}"
+                print(f"  [{ico_key}] Found Message Mapping: {mm_key}")
+
+                mm_details_xml = MESSAGE_MAPPING_DETAILS(mm_key, swcguid)
+                if not mm_details_xml: continue
+
+                mm_root = ET.fromstring(mm_details_xml)
+                
+                # Process UDFs embedded in the Message Mapping
+                source_code_blob = mm_root.find('.//tr:SourceCode/tr:blob', {'tr': 'urn:sap-com:xi:mapping:xitrafo'})
+                if source_code_blob is not None and source_code_blob.text:
+                    try:
+                        zip_data = base64.b64decode(source_code_blob.text.replace('!zip!', ''))
+                        with zipfile.ZipFile(io.BytesIO(zip_data)) as z1, zipfile.ZipFile(io.BytesIO(z1.read(z1.namelist()[0]))) as z2:
+                            java_content = z2.read(z2.namelist()[0]).decode('utf-8', errors='ignore')
+                        extracted_udfs = parse_udfs_from_java_content(java_content)
+                        if extracted_udfs:
+                            mm_zip_filename = mm_name.replace('/', '_').replace(':', '_') + ".zip"
+                            with zipfile.ZipFile(os.path.join(output_dir, mm_zip_filename), 'w', zipfile.ZIP_DEFLATED) as zf:
+                                for file_name, content in extracted_udfs.items(): zf.writestr(file_name, content)
+                            print(f"    [{ico_key}] Created UDF archive: {mm_zip_filename}")
+                    except Exception as e:
+                        print(f"    [{ico_key}] Error extracting UDFs from {mm_key}: {e}")
+
+                # Process Function Libraries linked from the Message Mapping
+                for fl_key_elem in mm_root.findall(".//p1:key[@typeID='FUNC_LIB']", namespaces):
+                    fl_name, fl_namespace = [e.text for e in fl_key_elem.findall("p1:elem", namespaces)]
+                    fl_key = f"{fl_name}|{fl_namespace}"
+
+                    if processed_func_libs.add(fl_key):
+                        print(f"  [{ico_key}] Found Function Library: {fl_key}")
+                        fl_details_xml = FUNCTION_LIBRARY_DETAILS(fl_key, swcguid)
+                        if not fl_details_xml: continue
+
+                        fl_root = ET.fromstring(fl_details_xml)
+                        blob_elem = fl_root.find('.//fl:blob', {'fl': 'urn:sap-com:xi:flib'})
+                        if blob_elem is not None and blob_elem.text:
+                            try:
+                                zip_data = base64.b64decode(blob_elem.text.replace('!zip!', ''))
+                                with zipfile.ZipFile(io.BytesIO(zip_data)) as z1:
+                                    if 'value' in z1.namelist():
+                                        value_content = z1.read('value')
+                                        with zipfile.ZipFile(io.BytesIO(value_content)) as z2:
+                                            if 'metaData.xml' in z2.namelist():
+                                                xml_content = z2.read('metaData.xml')
+                                                class_name, java_code = generate_java_from_funclib_xml(xml_content)
+                                                if class_name and java_code:
+                                                    fl_zip_filename = fl_name.replace('/', '_').replace(':', '_') + ".zip"
+                                                    with zipfile.ZipFile(os.path.join(output_dir, fl_zip_filename), 'w', zipfile.ZIP_DEFLATED) as zf:
+                                                        zf.writestr(f"{class_name}.txt", java_code)
+                                                    print(f"    [{ico_key}] Created Function Library archive: {fl_zip_filename}")
+                            except Exception as e:
+                                print(f"    [{ico_key}] Error processing Function Library {fl_key}: {e}")
+
 def main():
     """
-    Main function to orchestrate the UDF and Function Library extraction process.
-    Connects to SAP PO, processes objects in memory, and saves source code to ZIP files.
+    Main function to orchestrate the extraction process in parallel.
     """
-    print("Starting UDF & Function Library extraction process...")
-    output_dir = "source-code"
+    output_dir = "output-udfs"
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
-    # 1. Get ICO List
+    print("Starting UDF & Function Library extraction process...")
     ico_list_html = ICO_LIST()
     if not ico_list_html:
         return
@@ -162,120 +244,22 @@ def main():
         end_index = ico_list_html.find(end_tag, start_index)
         xml_string = html.unescape(ico_list_html[start_index:end_index].strip())
         root = ET.fromstring(xml_string)
-        
         ico_keys = ['|'.join(elem.text or '' for elem in key_elem.findall('.//elem')) for key_elem in root.findall('.//qref/.//key')]
         print(f"Found {len(ico_keys)} ICOs to process.")
-
     except Exception as e:
         print(f"Error parsing ICO list XML: {e}")
         return
 
-    # 2. Process each ICO
-    processed_func_libs = set() # Keep track of processed function libraries to avoid duplicates
-
-    for ico_key in ico_keys:
-        print(f"\n--- Processing ICO: {ico_key} ---")
-        ico_details_xml = ICO_DETAILS(ico_key)
-        if not ico_details_xml:
-            continue
-
-        try:
-            namespaces = {'p1': 'urn:sap-com:xi'}
-            ico_root = ET.fromstring(ico_details_xml)
-            
-            map_roles = ico_root.findall(".//*[@role='MAP0']", namespaces)
-
-            for map_role in map_roles:
-                om_key_elem = map_role.find(".//p1:key[@typeID='MAPPING']", namespaces)
-                if om_key_elem is not None:
-                    om_name, om_namespace = [e.text for e in om_key_elem.findall("p1:elem", namespaces)]
-                    om_key = f"{om_name}|{om_namespace}"
-                    swcguid = map_role.find(".//p1:vc", namespaces).get('swcGuid')
-                    print(f"  Found Operation Mapping: {om_key}")
-
-                    om_details_xml = OPERATION_MAPPING_DETAILS(om_key, swcguid)
-                    if not om_details_xml: continue
-                    
-                    om_root = ET.fromstring(om_details_xml)
-                    
-                    # Process Message Mappings linked in the Operation Mapping
-                    for mm_key_elem in om_root.findall(".//p1:key[@typeID='XI_TRAFO']", namespaces):
-                        mm_name, mm_namespace = [e.text for e in mm_key_elem.findall("p1:elem", namespaces)]
-                        mm_key = f"{mm_name}|{mm_namespace}"
-                        print(f"  -> Found Message Mapping: {mm_key}")
-
-                        mm_details_xml = MESSAGE_MAPPING_DETAILS(mm_key, swcguid)
-                        if not mm_details_xml: continue
-
-                        mm_root = ET.fromstring(mm_details_xml)
-                        
-                        # --- In-memory UDF extraction from Message Mapping ---
-                        source_code_blob = mm_root.find('.//tr:SourceCode/tr:blob', {'tr': 'urn:sap-com:xi:mapping:xitrafo'})
-                        if source_code_blob is not None and source_code_blob.text:
-                            print(f"    Found embedded UDFs. Processing in memory...")
-                            try:
-                                zip_data = base64.b64decode(source_code_blob.text.replace('!zip!', ''))
-                                with zipfile.ZipFile(io.BytesIO(zip_data)) as z1:
-                                    first_value_file_name = z1.namelist()[0]
-                                    with z1.open(first_value_file_name) as f1, zipfile.ZipFile(io.BytesIO(f1.read())) as z2:
-                                        second_value_file_name = z2.namelist()[0]
-                                        with z2.open(second_value_file_name) as f2:
-                                            java_content = f2.read().decode('utf-8', errors='ignore')
-                                
-                                # Parse the java content to get UDFs
-                                extracted_udfs = parse_udfs_from_java_content(java_content)
-                                
-                                if extracted_udfs:
-                                    # Save extracted UDFs to a zip file
-                                    mm_zip_filename = mm_name.replace('/', '_').replace(':', '_') + ".zip"
-                                    mm_zip_filepath = os.path.join(output_dir, mm_zip_filename)
-                                    with zipfile.ZipFile(mm_zip_filepath, 'w', zipfile.ZIP_DEFLATED) as output_zip:
-                                        for file_name, content in extracted_udfs.items():
-                                            output_zip.writestr(file_name, content)
-                                    print(f"    Successfully created UDF source archive: {mm_zip_filepath}")
-
-                            except Exception as e:
-                                print(f"    Error during in-memory UDF extraction: {e}")
-
-                        # Process Function Libraries linked in the Message Mapping
-                        for fl_key_elem in mm_root.findall(".//p1:key[@typeID='FUNC_LIB']", namespaces):
-                            fl_name, fl_namespace = [e.text for e in fl_key_elem.findall("p1:elem", namespaces)]
-                            fl_key = f"{fl_name}|{fl_namespace}"
-
-                            if fl_key in processed_func_libs:
-                                print(f"  -> Skipping already processed Function Library: {fl_key}")
-                                continue
-                            
-                            print(f"  -> Found Function Library: {fl_key}")
-                            processed_func_libs.add(fl_key)
-
-                            fl_details_xml = FUNCTION_LIBRARY_DETAILS(fl_key, swcguid)
-                            if not fl_details_xml: continue
-
-                            fl_root = ET.fromstring(fl_details_xml)
-                            
-                            # --- In-memory processing for Function Library ---
-                            blob_elem = fl_root.find('.//fl:blob', {'fl': 'urn:sap-com:xi:flib'})
-                            if blob_elem is not None and blob_elem.text:
-                                print(f"    Found embedded source. Processing in memory...")
-                                try:
-                                    zip_data = base64.b64decode(blob_elem.text.replace('!zip!', ''))
-                                    with zipfile.ZipFile(io.BytesIO(zip_data)) as jar_file:
-                                        if 'metaData.xml' in jar_file.namelist():
-                                            xml_content = jar_file.read('metaData.xml')
-                                            class_name, java_code = generate_java_from_funclib_xml(xml_content)
-                                            
-                                            if class_name and java_code:
-                                                fl_zip_filename = fl_name.replace('/', '_').replace(':', '_') + ".zip"
-                                                fl_zip_filepath = os.path.join(output_dir, fl_zip_filename)
-                                                with zipfile.ZipFile(fl_zip_filepath, 'w', zipfile.ZIP_DEFLATED) as output_zip:
-                                                    output_zip.writestr(f"{class_name}.java", java_code)
-                                                print(f"    Successfully created Function Library source archive: {fl_zip_filepath}")
-                                except Exception as e:
-                                    print(f"    Error during in-memory Function Library extraction: {e}")
-
-        except Exception as e:
-            print(f"  An error occurred while processing ICO {ico_key}: {e}")
+    processed_func_libs = ThreadSafeSet()
+    
+    with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
+        futures = [executor.submit(process_single_ico, key, processed_func_libs, output_dir) for key in ico_keys]
+        
+        for future in concurrent.futures.as_completed(futures):
+            try:
+                future.result()
+            except Exception as e:
+                print(f"An error occurred in a worker thread: {e}")
 
     print("\nUDF & Function Library extraction process finished.")
 

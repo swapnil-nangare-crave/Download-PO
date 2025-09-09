@@ -1,7 +1,0 @@
-DynamicConfiguration conf = (DynamicConfiguration) container.getTransformationParameters().get(StreamTransformationConstants.DYNAMIC_CONFIGURATION);
-
-DynamicConfigurationKey key = DynamicConfigurationKey.create("http://sap.com/xi/XI/System/File","FileName");
-
-String fileName = conf.get(key);
-
-return fileName;
