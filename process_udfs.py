@@ -2,14 +2,13 @@ import os
 import xml.etree.ElementTree as ET
 import zipfile
 
-def parse_and_save_udf(xml_file_path, output_dir):
+def generate_java_from_xml(xml_content):
     """
-    Parses the metaData.xml file, extracts UDF information,
-    and saves it as a .java file.
+    Parses the metaData.xml content, extracts UDF information,
+    and returns the class name and generated Java code.
     """
     try:
-        tree = ET.parse(xml_file_path)
-        root = tree.getroot()
+        root = ET.fromstring(xml_content)
 
         package_name = root.find('package').text
         class_name = root.find('classname').text
@@ -31,49 +30,60 @@ def parse_and_save_udf(xml_file_path, output_dir):
             java_text_element = function.find('implementation/javaText')
             if java_text_element is not None:
                 udf_code = java_text_element.text
-                
-                return_type = "String" # Default
+                return_type = "String"  # Default
 
                 java_code += f"    public {return_type} {function_name}({', '.join(args)}) {{\n"
                 java_code += f"        {udf_code.strip()}\n"
                 java_code += f"    }}\n\n"
 
         java_code += "}"
-
-        java_file_path = os.path.join(output_dir, f"{class_name}.java")
-
-        with open(java_file_path, "w", encoding="utf-8") as f:
-            f.write(java_code)
-
-        print(f"Successfully created {java_file_path}")
+        return class_name, java_code
 
     except Exception as e:
-        print(f"An error occurred while processing {xml_file_path}: {e}")
+        print(f"An error occurred during XML parsing: {e}")
+        return None, None
 
-def process_all_udfs(start_dir="source-code"):
+def process_function_libraries(input_dir="bytecode", output_dir="source-code"):
     """
-    Scans for function libraries, extracts metadata, and creates java files.
+    Scans for Function Library JARs, generates Java source from their metaData.xml,
+    and saves the source code into a ZIP archive.
     """
-    for root, dirs, files in os.walk(start_dir):
-        if 'value' in files:
-            value_file_path = os.path.join(root, 'value')
-            print(f"Processing Function Library: {value_file_path}")
+    print(f"Starting Function Library processing in {input_dir}...")
+
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+
+    for filename in os.listdir(input_dir):
+        if filename.endswith(".jar"):
+            jar_path = os.path.join(input_dir, filename)
             
             try:
-                with zipfile.ZipFile(value_file_path, 'r') as zip_ref:
-                    zip_ref.extractall(root)
-                print(f"  Extracted contents of {value_file_path}")
-                
-                metadata_path = os.path.join(root, 'metaData.xml')
-                if os.path.exists(metadata_path):
-                    parse_and_save_udf(metadata_path, root)
-                else:
-                    print(f"  Could not find metaData.xml in {root}")
+                with zipfile.ZipFile(jar_path, 'r') as jar_file:
+                    # Identify function libraries by the presence of metaData.xml
+                    if 'metaData.xml' in jar_file.namelist():
+                        print(f"Processing Function Library: {filename}")
+                        xml_content = jar_file.read('metaData.xml')
+                        
+                        class_name, java_code = generate_java_from_xml(xml_content)
+                        
+                        if class_name and java_code:
+                            # Create a zip file for this function library
+                            zip_filename = os.path.splitext(filename)[0] + ".zip"
+                            zip_filepath = os.path.join(output_dir, zip_filename)
+                            
+                            with zipfile.ZipFile(zip_filepath, 'w', zipfile.ZIP_DEFLATED) as output_zip:
+                                output_zip.writestr(f"{class_name}.java", java_code)
+                            
+                            print(f"  Successfully created source archive: {zip_filepath}")
+                        else:
+                            print(f"  Failed to generate Java code from {filename}.")
             except zipfile.BadZipFile:
-                # This is expected for message mappings, so we can ignore this error.
-                print(f"  Skipping {value_file_path} as it is not a zip file (likely a message mapping UDF).")
+                # This can happen if the file is not a real JAR, so we just note it.
+                print(f"  Skipping {filename}, as it is not a valid JAR/ZIP file.")
             except Exception as e:
-                print(f"  An error occurred while processing {value_file_path}: {e}")
+                print(f"  An error occurred while processing {filename}: {e}")
+
+    print("\nFunction Library processing finished.")
 
 if __name__ == "__main__":
-    process_all_udfs()
+    process_function_libraries()

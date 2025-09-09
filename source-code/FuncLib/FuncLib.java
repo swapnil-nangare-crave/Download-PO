@@ -7,6 +7,7 @@ import java.io.*;
 import java.lang.reflect.*;
 import java.util.*;
 
+
 public class FuncLib {
 
     public String upperCase(String inputString) {

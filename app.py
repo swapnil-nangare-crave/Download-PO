@@ -2,13 +2,21 @@ import requests
 import xml.etree.ElementTree as ET
 import base64
 import os
-
 import html
+import subprocess
+import zipfile
+import io
+import tempfile
 
 # --- Configuration ---
-BASE_URL = "http://192.168.1.118:50000"
-CLIENT_ID = "SAC_Swapnil"
-CLIENT_SECRET = "Pass@111"
+from dotenv import load_dotenv
+load_dotenv( dotenv_path=".env", override=True)
+
+BASE_URL = os.getenv("BASE_URL")
+CLIENT_ID = os.getenv("CLIENT_ID")
+CLIENT_SECRET = os.getenv("CLIENT_SECRET")
+JAVA_EXECUTABLE_PATH = os.getenv("JAVA_EXECUTABLE_PATH", "java")
+print(f"--- Using Java executable path: {JAVA_EXECUTABLE_PATH} ---")
 # ---
 
 def get_auth():
@@ -104,174 +112,154 @@ def JAVA_MAPPING(key, swcguid):
         print(f"Error fetching Java Mapping: {e}")
         return None
 
-def extract_java_code(jar_content_base64, output_dir="bytecode", filename="mapping.jar"):
+def process_and_save_mapping(jar_data, filename_base, output_dir="output"):
     """
-    Decodes the Base64 JAR content and saves it to a file.
+    Processes a Java Mapping JAR from memory.
+    - If it contains .class files, it decompiles them and creates a ZIP archive
+      in the output directory containing the .java source and other resources.
+    - If it contains no .class files, it saves the original JAR as a ZIP file.
     """
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+
+    output_zip_path = os.path.join(output_dir, f"{filename_base}.zip")
+
     try:
-        jar_data = base64.b64decode(jar_content_base64)
-        if not os.path.exists(output_dir):
-            os.makedirs(output_dir)
-        file_path = os.path.join(output_dir, filename)
-        with open(file_path, "wb") as f:
+        with zipfile.ZipFile(io.BytesIO(jar_data)) as jar_file:
+            class_files = [f for f in jar_file.namelist() if f.endswith('.class')]
+
+            if not class_files:
+                print(f"  No .class files found. Saving original JAR as {output_zip_path}")
+                with open(output_zip_path, "wb") as f:
+                    f.write(jar_data)
+                return
+
+            print(f"  Found {len(class_files)} .class file(s). Decompiling and creating ZIP archive...")
+
+            with zipfile.ZipFile(output_zip_path, 'w', zipfile.ZIP_DEFLATED) as output_zip:
+                for member in jar_file.infolist():
+                    print(f"    Processing member: {member.filename}")
+                    if member.filename.endswith('.class'):
+                        print(f"      Found .class file. Attempting to decompile...")
+                        with tempfile.NamedTemporaryFile(delete=False, suffix='.class') as temp_class_file:
+                            temp_class_file.write(jar_file.read(member.filename))
+                            temp_class_path = temp_class_file.name
+
+                        try:
+                            proc = subprocess.run(
+                                [JAVA_EXECUTABLE_PATH, '-jar', 'procyon-decompiler-0.6.0.jar', temp_class_path],
+                                capture_output=True, text=True, encoding='utf-8', errors='ignore'
+                            )
+
+                            if proc.stderr:
+                                print(f"      Decompiler stderr:\n---\n{proc.stderr}\n---")
+
+                            if proc.returncode == 0 and proc.stdout:
+                                java_source = proc.stdout
+                                java_filename = member.filename.replace('.class', '.java')
+                                output_zip.writestr(java_filename, java_source)
+                                print(f"      SUCCESS: Decompiled and added {java_filename}")
+                            else:
+                                print(f"      FAILURE: Decompilation failed or produced no output for {member.filename}. Adding original .class file to ZIP.")
+                                output_zip.writestr(member.filename, jar_file.read(member.filename))
+                        finally:
+                            os.unlink(temp_class_path)
+                    else:
+                        print(f"      Not a .class file. Copying directly.")
+                        output_zip.writestr(member.filename, jar_file.read(member.filename))
+
+            print(f"  Successfully created source archive: {output_zip_path}")
+
+    except zipfile.BadZipFile:
+        print(f"  Error: Bad JAR/ZIP file. Saving original file as {output_zip_path}")
+        with open(output_zip_path, "wb") as f:
             f.write(jar_data)
-        print(f"Successfully saved JAR file to {file_path}")
-        return file_path
     except Exception as e:
-        print(f"Error decoding/saving JAR file: {e}")
-        return None
+        print(f"  An error occurred while processing the JAR file: {e}")
 
 def main():
     """
     Main function to orchestrate the download process.
     """
-    print("Starting Java Mapping extraction process...")
+    print("Starting Java Mapping extraction and processing...")
 
     # 1. Get ICO List
-    ico_list_xml = ICO_LIST()
-    if not ico_list_xml:
+    ico_list_html = ICO_LIST()
+    if not ico_list_html:
         return
-
-    # Save the XML to a file for debugging
-    metadata_dir = "metadata"
-    if not os.path.exists(metadata_dir):
-        os.makedirs(metadata_dir)
-    with open(os.path.join(metadata_dir, "ico_list_java.xml"), "w", encoding="utf-8") as f:
-        f.write(ico_list_xml)
-    print("Saved ICO list response to metadata/ico_list_java.xml")
 
     # 2. Parse ICO List XML from HTML response
     try:
-        # The response is HTML. We will extract the XML from the textarea using string manipulation.
         start_tag = '<textarea name="response" cols="50" rows="10" readonly>'
         end_tag = '</textarea>'
-        start_index = ico_list_xml.find(start_tag)
-        if start_index == -1:
-            raise AttributeError("Could not find the start of the response textarea.")
-        
-        start_index += len(start_tag)
-        end_index = ico_list_xml.find(end_tag, start_index)
-        if end_index == -1:
-            raise AttributeError("Could not find the end of the response textarea.")
-
-        print(f"Start index: {start_index}")
-        print(f"End index: {end_index}")
-
-        xml_string = ico_list_xml[start_index:end_index].strip()
-        xml_string = html.unescape(xml_string)
-
-        print(f"Length of extracted string: {len(xml_string)}")
-        print(f"Representation of extracted string: {repr(xml_string)}")
-
-        # Print the extracted XML string for debugging
-        print("\n--- Extracted XML String ---")
-        print(xml_string)
-        print("--------------------------\n")
-
-        # Now parse the extracted XML string
+        start_index = ico_list_html.find(start_tag) + len(start_tag)
+        end_index = ico_list_html.find(end_tag, start_index)
+        xml_string = html.unescape(ico_list_html[start_index:end_index].strip())
         root = ET.fromstring(xml_string)
-        
-        # IMPORTANT: The following line assumes the ICO keys are found in <qref>...<key>
-        # Please inspect the XML output and adjust the findall path if needed.
-        ico_keys = []
-        for qref in root.findall('.//qref'):
-            key_elem = qref.find('.//key')
-            if key_elem is not None:
-                # Reconstruct the key from the elem tags
-                key_parts = [elem.text if elem.text is not None else '' for elem in key_elem.findall('.//elem')]
-                ico_keys.append('|'.join(key_parts))
 
-        if not ico_keys:
-            print("No ICOs found in the response.")
-            return
+        ico_keys = ['|'.join(elem.text or '' for elem in key_elem.findall('.//elem')) for key_elem in root.findall('.//qref/.//key')]
+        print(f"Found {len(ico_keys)} ICOs to process.")
 
-        print(f"Found {len(ico_keys)} ICOs.")
-
-    except (ET.ParseError, AttributeError) as e:
+    except Exception as e:
         print(f"Error parsing ICO list XML: {e}")
         return
 
     # 3. Process each ICO
     for ico_key in ico_keys:
-        print(f"\n--- Processing ICO with key: {ico_key} ---")
+        print(f"\n--- Processing ICO: {ico_key} ---")
         ico_details_xml = ICO_DETAILS(ico_key)
         if not ico_details_xml:
             continue
 
-        ico_key_filename = ico_key.replace('|','_').replace('/','_').replace(':','_').replace('*','_')
-        with open(os.path.join("metadata", f"ico_details_{ico_key_filename}.xml"), "w", encoding="utf-8") as f:
-            f.write(ico_details_xml)
-
         try:
-            # Correct namespace for the ICO details XML
             namespaces = {'p1': 'urn:sap-com:xi'}
             ico_root = ET.fromstring(ico_details_xml)
-
-            # Find Operation Mapping details
             map_role = ico_root.find(".//p1:lnkRole[@role='MAP0']", namespaces)
+
             if map_role is not None:
-                # Extract OM name and namespace
                 om_key_elem = map_role.find(".//p1:key[@typeID='MAPPING']", namespaces)
                 if om_key_elem is not None:
                     elems = om_key_elem.findall("p1:elem", namespaces)
-                    om_name = elems[0].text
-                    om_namespace = elems[1].text
+                    om_name, om_namespace = elems[0].text, elems[1].text
                     om_key = f"{om_name}|{om_namespace}"
+                    swcguid = map_role.find(".//p1:vc", namespaces).get('swcGuid')
+                    print(f"  Found Operation Mapping: {om_key}")
 
-                    # Extract swcGuid
-                    vc_elem = map_role.find(".//p1:vc", namespaces)
-                    swcguid = vc_elem.get('swcGuid')
-
-                    print(f"Found Operation Mapping: {om_key} with SWCGUID: {swcguid}")
-
-                    # 4. Get Operation Mapping Details
                     om_details_xml = OPERATION_MAPPING_DETAILS(om_key, swcguid)
                     if not om_details_xml:
                         continue
 
-                    om_key_filename = om_key.replace('|','_').replace('/','_').replace(':','_').replace('*','_')
-                    with open(os.path.join("metadata", f"om_details_{om_key_filename}.xml"), "w", encoding="utf-8") as f:
-                        f.write(om_details_xml)
-
                     om_root = ET.fromstring(om_details_xml)
-                    # Check for Java Mapping
                     java_mapping_key = om_root.find(".//p1:key[@typeID='MAP_ARCHIVE_PRG']", namespaces)
                     if java_mapping_key is not None:
                         java_mapping_name = java_mapping_key.find(".//p1:elem[1]", namespaces).text
                         java_mapping_namespace = java_mapping_key.find(".//p1:elem[2]", namespaces).text
                         java_mapping_full_key = f"{java_mapping_name}|{java_mapping_namespace}"
-                        
-                        print(f"Found Java Mapping: {java_mapping_full_key}")
+                        print(f"    Found Java Mapping: {java_mapping_full_key}")
 
-                        # 5. Download Java Mapping
                         java_mapping_xml = JAVA_MAPPING(java_mapping_full_key, swcguid)
                         if not java_mapping_xml:
                             continue
 
-                        java_mapping_filename = java_mapping_full_key.replace('|','_').replace('/','_').replace(':','_').replace('*','_')
-                        with open(os.path.join("metadata", f"java_mapping_{java_mapping_filename}.xml"), "w", encoding="utf-8") as f:
-                            f.write(java_mapping_xml)
-
                         java_mapping_root = ET.fromstring(java_mapping_xml)
-                        # Correct namespace for the archive
                         archive_ns = {'ar': 'urn:sap-com:xi:mapping:archive'}
                         blob_element = java_mapping_root.find(".//ar:blob", archive_ns)
-                        
-                        if blob_element is not None and blob_element.text:
-                            # Remove the '!jar!' prefix and decode the base64 content
-                            jar_content_base64 = blob_element.text.replace('!jar!', '')
-                            # Use ICO key and OM name for a more descriptive filename
-                            filename = f"{ico_key.replace('|','_').replace('/','_').replace(':','_').replace('*','_')}_{om_name}.jar"
-                            extract_java_code(jar_content_base64, filename=filename)
-                        else:
-                            print("Could not find blob content in the response.")
 
+                        if blob_element is not None and blob_element.text:
+                            jar_content_base64 = blob_element.text.replace('!jar!', '')
+                            jar_data = base64.b64decode(jar_content_base64)
+
+                            # Process and save the mapping
+                            filename_base = f"{ico_key.replace('|','_').replace('/','_').replace(':','_').replace('*','_')}_{om_name}"
+                            process_and_save_mapping(jar_data, filename_base)
+                        else:
+                            print("    Could not find blob content in the Java Mapping response.")
                     else:
-                        print("No Java Mapping found for this Operation Mapping.")
+                        print("  No Java Mapping found for this Operation Mapping.")
             else:
-                print("No Operation Mapping found for this ICO.")
-        except ET.ParseError as e:
-            print(f"Error parsing ICO details XML: {e}")
+                print("  No Operation Mapping found for this ICO.")
+        except Exception as e:
+            print(f"  Error parsing details for ICO {ico_key}: {e}")
 
     print("\nExtraction process finished.")
 
