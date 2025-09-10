@@ -10,8 +10,10 @@ import concurrent.futures
 import threading
 
 # --- Configuration ---
-from dotenv import load_dotenv
-load_dotenv( dotenv_path=".env", override=True)
+# Load environment variables only if not in a Cloud Foundry environment
+if 'VCAP_APPLICATION' not in os.environ:
+    from dotenv import load_dotenv
+    load_dotenv(dotenv_path=".env", override=True)
 
 BASE_URL = os.getenv("BASE_URL")
 CLIENT_ID = os.getenv("CLIENT_ID")
@@ -61,6 +63,7 @@ def parse_udfs_from_java_content(java_content):
             current_block_code = []
         elif end_match and in_block:
             in_block = False
+            # Saving the extracted block as .txt file cause in udf we are processing only .txt files
             file_name = f"{current_block_name}.txt"
             extracted_blocks[file_name] = "\n".join(current_block_code)
             current_block_code = []
@@ -70,7 +73,7 @@ def parse_udfs_from_java_content(java_content):
     return extracted_blocks
 
 def generate_java_from_funclib_xml(xml_content):
-    """Parses the XML content from a Function Library to generate Java source."""
+    """Parses the XML content from a Function Library's 'value' file to generate Java source."""
     try:
         root = ET.fromstring(xml_content)
         package_elem = root.find('package')
@@ -219,8 +222,13 @@ def process_single_ico(ico_key, processed_func_libs, output_dir):
                                                 if class_name and java_code:
                                                     fl_zip_filename = fl_name.replace('/', '_').replace(':', '_') + ".zip"
                                                     with zipfile.ZipFile(os.path.join(output_dir, fl_zip_filename), 'w', zipfile.ZIP_DEFLATED) as zf:
+                                                        # Saving the extracted block as .txt file cause in convert_udf we are processing only .txt files
                                                         zf.writestr(f"{class_name}.txt", java_code)
                                                     print(f"    [{ico_key}] Created Function Library archive: {fl_zip_filename}")
+                                            else:
+                                                print(f"    [{ico_key}] 'metaData.xml' not found in the nested 'value' file for {fl_key}.")
+                                    else:
+                                        print(f"    [{ico_key}] 'value' file not found in the blob for {fl_key}.")
                             except Exception as e:
                                 print(f"    [{ico_key}] Error processing Function Library {fl_key}: {e}")
 
@@ -228,7 +236,7 @@ def main():
     """
     Main function to orchestrate the extraction process in parallel.
     """
-    output_dir = "output-udfs"
+    output_dir = "output_udf_funclib"
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
@@ -265,6 +273,6 @@ def main():
 
 if __name__ == "__main__":
     if not all([BASE_URL, CLIENT_ID, CLIENT_SECRET]):
-        print("Please ensure BASE_URL, CLIENT_ID, and CLIENT_SECRET are set in your .env file.")
+        print("Please ensure BASE_URL, CLIENT_ID, and CLIENT_SECRET are set in your environment variables.")
     else:
         main()

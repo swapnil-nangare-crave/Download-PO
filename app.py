@@ -10,13 +10,16 @@ import tempfile
 import concurrent.futures
 
 # --- Configuration ---
-from dotenv import load_dotenv
-load_dotenv( dotenv_path=".env", override=True)
+# Load environment variables only if not in a Cloud Foundry environment
+if 'VCAP_APPLICATION' not in os.environ:
+    from dotenv import load_dotenv
+    load_dotenv(dotenv_path=".env", override=True)
 
 BASE_URL = os.getenv("BASE_URL")
 CLIENT_ID = os.getenv("CLIENT_ID")
 CLIENT_SECRET = os.getenv("CLIENT_SECRET")
-JAVA_EXECUTABLE_PATH = os.getenv("JAVA_EXECUTABLE_PATH", "java")
+# Default path for Java executable in Cloud Foundry Java buildpack
+JAVA_EXECUTABLE_PATH = os.getenv("JAVA_EXECUTABLE_PATH", "/home/vcap/app/.java-buildpack/jre/bin/java")
 # ---
 
 def get_auth():
@@ -45,7 +48,7 @@ def ICO_DETAILS(ico_key):
 def OPERATION_MAPPING_DETAILS(key, swcguid):
     url = f"{BASE_URL}/rep/read/ext"
     params = {"method": "PLAIN", "TYPE": "MAPPING", "KEY": key, "VC": "SWC", "SWCGUID": swcguid, "SP": "-1", "UC": "false", "release": "7.0"}
-    return execute_api_call(url, params, "Error fetching Operation Mapping details")
+    return execute_api_call(url, params, f"Error fetching Operation Mapping details for {key}")
 
 def JAVA_MAPPING(key, swcguid):
     url = f"{BASE_URL}/rep/read/ext"
@@ -176,13 +179,17 @@ def main():
     # Use a ThreadPoolExecutor to process ICOs in parallel
     # Set max_workers to a reasonable number to avoid overwhelming the server
     with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
-        executor.map(process_single_ico, ico_keys)
+        futures = [executor.submit(process_single_ico, key) for key in ico_keys]
+        for future in concurrent.futures.as_completed(futures):
+            try:
+                future.result()
+            except Exception as e:
+                print(f"An error occurred in a worker thread: {e}")
 
     print("\nJava Mapping extraction process finished.")
 
 if __name__ == "__main__":
     if not all([BASE_URL, CLIENT_ID, CLIENT_SECRET]):
-        print("Please ensure BASE_URL, CLIENT_ID, and CLIENT_SECRET are set in your .env file.")
+        print("Please ensure BASE_URL, CLIENT_ID, and CLIENT_SECRET are set in your environment variables.")
     else:
-        print(f"--- Using Java executable path: {JAVA_EXECUTABLE_PATH} ---")
         main()

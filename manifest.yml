@@ -1,0 +1,14 @@
+applications:
+- name: sap-po-extractor
+  memory: 512M
+  buildpacks:
+    - java_buildpack
+    - python_buildpack
+  command: python app.py # This will be updated later to run both or a consolidated script
+  env:
+    PYTHONUNBUFFERED: 1
+    # These variables will need to be set via 'cf set-env' or in manifest.yml directly
+    # BASE_URL: "http://your-sap-po-host:50000"
+    # CLIENT_ID: "your-client-id"
+    # CLIENT_SECRET: "your-client-secret"
+    # JAVA_EXECUTABLE_PATH: "/home/vcap/app/.java-buildpack/jre/bin/java" # Typical path for Java buildpack
