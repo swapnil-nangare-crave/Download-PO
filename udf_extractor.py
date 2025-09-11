@@ -10,10 +10,8 @@ import concurrent.futures
 import threading
 
 # --- Configuration ---
-# Load environment variables only if not in a Cloud Foundry environment
-if 'VCAP_APPLICATION' not in os.environ:
-    from dotenv import load_dotenv
-    load_dotenv(dotenv_path=".env", override=True)
+from dotenv import load_dotenv
+load_dotenv()
 
 BASE_URL = os.getenv("BASE_URL")
 CLIENT_ID = os.getenv("CLIENT_ID")
@@ -256,7 +254,10 @@ def main():
         print(f"Found {len(ico_keys)} ICOs to process.")
     except Exception as e:
         print(f"Error parsing ICO list XML: {e}")
-        return
+        print("----------------- RAW RESPONSE -----------------")
+        print(ico_list_html)
+        print("----------------- END RAW RESPONSE -----------------")
+        return {"udfs": 0, "func_libs": 0}
 
     processed_func_libs = ThreadSafeSet()
     
