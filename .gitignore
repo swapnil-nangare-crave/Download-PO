@@ -1,2 +1,6 @@
 .env
 GEMINI.md
+DATA
+output
+output_udf_funclib
+__pycache__
